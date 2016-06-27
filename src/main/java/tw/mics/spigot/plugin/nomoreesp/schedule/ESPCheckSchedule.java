@@ -7,14 +7,17 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
+import tw.mics.spigot.plugin.nomoreesp.EntityHider;
 import tw.mics.spigot.plugin.nomoreesp.NoMoreESP;
 
 public class ESPCheckSchedule {
 	NoMoreESP plugin;
 	Runnable runnable;
+	EntityHider hider;
 	int schedule_id;
 	
 	public ESPCheckSchedule(NoMoreESP i){
+		this.hider = new EntityHider(plugin);
 		plugin = i;
 		setupRunnable();
 	}
@@ -50,7 +53,7 @@ public class ESPCheckSchedule {
 			if(distance > PLAYER_TRACKING_RANGE) return; 	    	// 過遠不用判斷
 			if(player.equals(target)) return;						// 自己不用判斷
 			if(distance < DONT_HIDE_RANGE){ 						// 過近直接不隱藏
-				plugin.hider.showEntity(player, target);
+				hider.showEntity(player, target);
 				return;		
 			}
 
@@ -67,14 +70,14 @@ public class ESPCheckSchedule {
 					loc.clone().add(0,0.5,0).getBlock().getType().isOccluding() &&
 					loc.clone().add(0,-0.5,0).getBlock().getType().isOccluding()
 				){
-					plugin.hider.hideEntity(player, target);
+					hider.hideEntity(player, target);
 					return;
 				}
 				
 				checked_distance += VECTOR_LENGTH;
 				loc.add(vector1);
 			}
-			plugin.hider.showEntity(player, target);
+			hider.showEntity(player, target);
 	}
 
 	public void removeRunnable(){

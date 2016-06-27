@@ -6,13 +6,3 @@ author: Mics
 website: https://mics.tw
 
 depend: [ProtocolLib]
-
-commands:
-  test:
-    description: test
-    usage: /test
-    
-permissions:
-  nomoreesp.admin:
-    description: no more esp!!!
-    default: op

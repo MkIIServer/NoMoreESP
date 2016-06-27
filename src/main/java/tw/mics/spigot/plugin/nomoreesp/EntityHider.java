@@ -35,7 +35,7 @@ public class EntityHider implements Listener {
     private PacketAdapter protocolListener;
     private Map<String, List<Integer>> hiddenEntityPerPlayer;
     
-	EntityHider(NoMoreESP instance){
+	public EntityHider(NoMoreESP instance){
 		this.plugin = instance;
 	    this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
 	    
