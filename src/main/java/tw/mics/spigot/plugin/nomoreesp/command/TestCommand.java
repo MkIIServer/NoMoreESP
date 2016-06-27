@@ -22,12 +22,8 @@ public class TestCommand implements CommandExecutor{
 			return true;
 		}
 		Player player = (Player) sender;
-		Player hidePlayer = plugin.getServer().getPlayer(args[0]);
-		if(plugin.hider.isVisible(player, hidePlayer)){
-			plugin.hider.hideEntity(player, hidePlayer);
-		} else {
-			plugin.hider.showEntity(player, hidePlayer);
-		}
+		Player target = plugin.getServer().getPlayer(args[0]);
+		this.plugin.checkBlock(player, target);
 		return true;
 	}
 }
