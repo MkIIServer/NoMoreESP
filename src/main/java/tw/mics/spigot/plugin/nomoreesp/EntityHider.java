@@ -58,6 +58,7 @@ public class EntityHider implements Listener {
     public final boolean showEntity(Player observer, Entity entity) {
         validate(observer, entity);
         boolean hiddenBefore = !setVisibility(observer, entity.getEntityId(), true);
+        //plugin.log("%s can see %s now", observer.getName(), entity.getName());
         
         // Resend packets
         if (manager != null && hiddenBefore) {
@@ -75,6 +76,7 @@ public class EntityHider implements Listener {
     public final boolean hideEntity(Player observer, Entity entity) {
         validate(observer, entity);
         boolean visibleBefore = setVisibility(observer, entity.getEntityId(), false);
+        //plugin.log("%s can't see %s now", observer.getName(), entity.getName());
         
         if (visibleBefore) {
             PacketContainer destroyEntity = new PacketContainer(ENTITY_DESTROY);
@@ -165,6 +167,7 @@ public class EntityHider implements Listener {
     @EventHandler
     private void onPlayerQuit(PlayerQuitEvent e) {
         hiddenEntityPerPlayer.remove(e.getPlayer().getUniqueId().toString());
+        removeEntity(e.getPlayer());
     }
     
     private void removeEntity(Entity entity){
