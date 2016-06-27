@@ -17,8 +17,8 @@ public class ESPCheckSchedule {
 	int schedule_id;
 	
 	public ESPCheckSchedule(NoMoreESP i){
-		this.hider = new EntityHider(plugin);
 		plugin = i;
+		this.hider = new EntityHider(plugin);
 		setupRunnable();
 	}
 	
