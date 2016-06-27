@@ -1,0 +1,32 @@
+<project name="NoMoreESP" default="dist" basedir=".">
+	<property name="pluginname" value="NoMoreESP"/>
+	<property name="bukkit.jar" location="../../TestServer/spigot.jar"/>
+	<property name="plugins" location="../../TestServer/plugins/"/>
+
+	<property name="src" location="src/main/java"/>
+	<property name="bin" location="target/classes"/>
+	<property name="dist" location="target"/>
+	
+	<target name="init">
+		<mkdir dir="${bin}"/>
+	</target>
+	
+	<target name="compile" depends="init">
+	</target>
+	
+	<target name="dist" depends="compile">
+		<mkdir dir="${dist}"/>
+		<jar jarfile="${dist}/${pluginname}.jar">
+			<fileset dir="${bin}"/>
+		</jar>
+	</target>
+	
+	<target name="deploy" depends="dist">
+		<copy file="${dist}/${pluginname}.jar" todir="${plugins}"/>
+	</target>
+	
+	<target name="clean">
+		<delete dir="${bin}"/>
+		<delete dir="${dist}"/>
+	</target>
+</project>

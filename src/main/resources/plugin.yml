@@ -1,0 +1,18 @@
+name: NoMoreESP
+main: tw.mics.spigot.plugin.nomoreesp.NoMoreESP
+version: ${project.version}
+description: ${project.description}
+author: Mics
+website: https://mics.tw
+
+depend: [ProtocolLib]
+
+commands:
+  test:
+    description: test
+    usage: /test
+    
+permissions:
+  nomoreesp.admin:
+    description: no more esp!!!
+    default: op

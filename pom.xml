@@ -1,0 +1,81 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- Project properties. -->
+    <groupId>tw.mics.spigot.plugin.nomoreesp</groupId>
+    <artifactId>NoMoreESP</artifactId>
+    <packaging>jar</packaging>
+    <version>0.1</version>
+    <name>NoMoreESP</name>
+    <url>http://mics.tw</url>
+    <description>anti ESP Hacking.</description>
+
+    <!-- Properties -->
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.mainclass>tw.mics.spigot.plugin.nomoreesp.NoMoreESP</project.mainclass>
+        <!--Use a profile to overwrite this-->
+        <outputdir>${project.build.outputDirectory}</outputdir>
+        <mc-version>1.10</mc-version>
+        <bukkit-ver>R0.1-SNAPSHOT</bukkit-ver>
+        <testDir>${basedir}/src/test/</testDir>
+        <srcDir>${basedir}/src/main/java/</srcDir>
+    </properties>
+
+    <!-- Build instructions -->
+    <build>
+        <finalName>${project.name}</finalName>
+        <defaultGoal>package</defaultGoal>
+        <testSourceDirectory>${testDir}</testSourceDirectory>
+        <sourceDirectory>${srcDir}</sourceDirectory>
+
+        <resources>
+            <resource>
+        		<filtering>true</filtering>
+                <directory>${basedir}/src/main/resources/</directory>
+                <includes>
+                	<include>plugin.yml</include>
+              	</includes>
+            </resource>
+        </resources>
+    </build>
+
+    <!-- Repositories -->
+    <repositories>
+        <repository>
+          <id>central</id>
+          <name>Maven repository</name>
+          <url>http://repo1.maven.org/maven2</url>
+        </repository>
+        
+        <!-- Spigot -->
+        <repository>
+            <id>spigot-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+        
+		<!-- ProtocolLib-API -->
+		<repository>
+		  <id>dmulloy2-repo</id>
+		  <url>http://repo.dmulloy2.net/content/groups/public/</url>
+		</repository>
+    </repositories>
+
+    <dependencies>
+        <!--Spigot API-->
+        <dependency>
+               <groupId>org.spigotmc</groupId>
+               <artifactId>spigot-api</artifactId>
+               <version>${mc-version}-${bukkit-ver}</version>
+               <scope>provided</scope>
+        </dependency>
+        
+		<!-- ProtocolLib-API -->
+        <dependency>
+		  <groupId>com.comphenix.protocol</groupId>
+		  <artifactId>ProtocolLib-API</artifactId>
+		  <version>4.0</version>
+		</dependency>
+    </dependencies>
+</project>
