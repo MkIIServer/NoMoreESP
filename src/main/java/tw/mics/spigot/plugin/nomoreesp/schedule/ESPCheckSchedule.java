@@ -1,5 +1,7 @@
 package tw.mics.spigot.plugin.nomoreesp.schedule;
 
+import java.util.List;
+
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -23,18 +25,20 @@ public class ESPCheckSchedule {
 				checkHide();
 			}
 		};
-		schedule_id = this.plugin.getServer().getScheduler().scheduleSyncRepeatingTask(this.plugin, runnable, 0, 5);
+		schedule_id = this.plugin.getServer().getScheduler().scheduleSyncRepeatingTask(this.plugin, runnable, 0, 2);
 	}
 
 	protected void checkHide() {
 		for(Player player : plugin.getServer().getOnlinePlayers()){
-			plugin.getServer().getOnlinePlayers().forEach(target -> checkLookable(player, target));
-			player.getWorld().getEntities().forEach(target -> checkLookable(player, target));
+			List<Entity> nearbyEntities = player.getNearbyEntities(PLAYER_TRACKING_RANGE, player.getWorld().getMaxHeight(), PLAYER_TRACKING_RANGE);
+			nearbyEntities.forEach(target -> checkLookable(player, target));
+			//plugin.getServer().getOnlinePlayers().forEach(target -> checkLookable(player, target));
+			//player.getWorld().getEntities().forEach(target -> checkLookable(player, target));
 		}
 	}
 
-	final int PLAYER_TRACKING_RANGE = 48; 	//TODO get server setting
-	final double DONT_HIDE_RANGE = 3;		//兩邊都會有作用 也就是實際距離是兩倍
+	final int PLAYER_TRACKING_RANGE = 64; 	//TODO get server setting
+	final double DONT_HIDE_RANGE = 1.5;		//兩邊都會有作用 也就是實際距離是兩倍
 	final double VECTOR_LENGTH = 0.5;		//每次增加確認的長
 	
 	private void checkLookable(Player player, Entity target){
@@ -59,9 +63,9 @@ public class ESPCheckSchedule {
 
 			while(checked_distance < distance - DONT_HIDE_RANGE){
 				if(
-					loc.getBlock().getType().isSolid() &&
-					loc.clone().add(0,0.5,0).getBlock().getType().isSolid() &&
-					loc.clone().add(0,-0.5,0).getBlock().getType().isSolid()
+					loc.getBlock().getType().isOccluding() &&
+					loc.clone().add(0,0.5,0).getBlock().getType().isOccluding() &&
+					loc.clone().add(0,-0.5,0).getBlock().getType().isOccluding()
 				){
 					plugin.hider.hideEntity(player, target);
 					return;
