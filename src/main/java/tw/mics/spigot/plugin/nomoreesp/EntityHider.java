@@ -14,13 +14,11 @@ import org.bukkit.plugin.Plugin;
 import static com.comphenix.protocol.PacketType.Play.Server.*;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
@@ -33,7 +31,7 @@ public class EntityHider implements Listener {
 	private NoMoreESP plugin;
     private ProtocolManager manager;
     private PacketAdapter protocolListener;
-    private Map<String, List<Integer>> hiddenEntityPerPlayer;
+    private Map<String, HashSet<Integer>> hiddenEntityPerPlayer;
     
 	public EntityHider(NoMoreESP instance){
 		this.plugin = instance;
@@ -43,7 +41,7 @@ public class EntityHider implements Listener {
         this.manager = ProtocolLibrary.getProtocolManager(); 
         
         //Init hiddenEntity
-        hiddenEntityPerPlayer = new HashMap<String, List<Integer>>();
+        hiddenEntityPerPlayer = new HashMap<String, HashSet<Integer>>();
         
         manager.addPacketListener(
                 protocolListener = constructProtocol(plugin));
@@ -113,7 +111,7 @@ public class EntityHider implements Listener {
      * @return TRUE if the entity was visible before this method call, FALSE otherwise.
      */
     private boolean setVisibility(Player observer, int entityID, boolean visible) {
-    	List<Integer> hiddenEntity = getHiddenEntity(observer);
+    	HashSet<Integer> hiddenEntity = getHiddenEntity(observer);
     	if(hiddenEntity.contains(entityID)){
     		if(visible == true){
     			hiddenEntity.remove((Object)entityID);
@@ -127,17 +125,17 @@ public class EntityHider implements Listener {
     	}
     }
     
-    private List<Integer> getHiddenEntity(Player p){
-    	List<Integer> hiddenEntity = hiddenEntityPerPlayer.get(p.getUniqueId().toString());
+    private HashSet<Integer> getHiddenEntity(Player p){
+    	HashSet<Integer> hiddenEntity = hiddenEntityPerPlayer.get(p.getUniqueId().toString());
     	if(hiddenEntity == null){
-    		hiddenEntity = new ArrayList<Integer>();
+    		hiddenEntity = new HashSet<Integer>();
     		hiddenEntityPerPlayer.put(p.getUniqueId().toString(), hiddenEntity);
     	}
 		return hiddenEntity;
     }
     
     private boolean isVisible(Player player, int entityID) {
-    	List<Integer> hiddenEntity = getHiddenEntity(player);
+    	HashSet<Integer> hiddenEntity = getHiddenEntity(player);
     	if(hiddenEntity.contains(entityID)){
     		return false;
     	}
