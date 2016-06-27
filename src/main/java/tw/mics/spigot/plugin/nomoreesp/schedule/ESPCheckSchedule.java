@@ -52,7 +52,7 @@ public class ESPCheckSchedule {
 			double checked_distance = 0;
 			if(distance > PLAYER_TRACKING_RANGE) return; 	    	// 過遠不用判斷
 			if(player.equals(target)) return;						// 自己不用判斷
-			if(distance < DONT_HIDE_RANGE){ 						// 過近直接不隱藏
+			if(distance < DONT_HIDE_RANGE * 2){ 					// 過近直接不隱藏
 				hider.showEntity(player, target);
 				return;		
 			}
