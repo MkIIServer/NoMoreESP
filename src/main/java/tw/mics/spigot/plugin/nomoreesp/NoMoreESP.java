@@ -5,15 +5,15 @@ import tw.mics.spigot.plugin.nomoreesp.schedule.ESPCheckSchedule;
 
 public class NoMoreESP extends JavaPlugin {
     private static NoMoreESP INSTANCE;
-	
-	@Override
-	public void onEnable() {
-		INSTANCE = this;
-		new ESPCheckSchedule(this);
+    
+    @Override
+    public void onEnable() {
+        INSTANCE = this;
+        new ESPCheckSchedule(this);
     }
 
-	public static NoMoreESP getInstance() {
-		return INSTANCE;
-	}
+    public static NoMoreESP getInstance() {
+        return INSTANCE;
+    }
     
 }

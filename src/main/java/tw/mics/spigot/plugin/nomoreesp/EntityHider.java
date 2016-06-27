@@ -28,16 +28,16 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.google.common.base.Preconditions;
 
 public class EntityHider implements Listener {
-	private NoMoreESP plugin;
+    private NoMoreESP plugin;
     private ProtocolManager manager;
     private PacketAdapter protocolListener;
     private Map<String, HashSet<Integer>> hiddenEntityPerPlayer;
     
-	public EntityHider(NoMoreESP instance){
-		this.plugin = instance;
-	    this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
-	    
-	    //Load ProtocolLib
+    public EntityHider(NoMoreESP instance){
+        this.plugin = instance;
+        this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
+        
+        //Load ProtocolLib
         this.manager = ProtocolLibrary.getProtocolManager(); 
         
         //Init hiddenEntity
@@ -45,8 +45,8 @@ public class EntityHider implements Listener {
         
         manager.addPacketListener(
                 protocolListener = constructProtocol(plugin));
-	}
-	
+    }
+    
     /**
      * Allow the observer to see an entity that was previously hidden.
      * @param observer - the observer.
@@ -91,8 +91,8 @@ public class EntityHider implements Listener {
     }
 
     public boolean isVisible(Player player, Entity entity) {
-    	return isVisible(player, entity.getEntityId());
-	}
+        return isVisible(player, entity.getEntityId());
+    }
     
 
     public void close() {
@@ -102,7 +102,7 @@ public class EntityHider implements Listener {
             manager = null;
         }
     }
-	
+    
     /**
      * Set the visibility status of a given entity for a particular observer.
      * @param observer - the observer player.
@@ -111,36 +111,36 @@ public class EntityHider implements Listener {
      * @return TRUE if the entity was visible before this method call, FALSE otherwise.
      */
     private boolean setVisibility(Player observer, int entityID, boolean visible) {
-    	HashSet<Integer> hiddenEntity = getHiddenEntity(observer);
-    	if(hiddenEntity.contains(entityID)){
-    		if(visible == true){
-    			hiddenEntity.remove((Object)entityID);
-    		}
-    		return false;
-    	} else {
-    		if(visible == false){
-    			hiddenEntity.add(entityID);
-    		}
-    		return true;
-    	}
+        HashSet<Integer> hiddenEntity = getHiddenEntity(observer);
+        if(hiddenEntity.contains(entityID)){
+            if(visible == true){
+                hiddenEntity.remove((Object)entityID);
+            }
+            return false;
+        } else {
+            if(visible == false){
+                hiddenEntity.add(entityID);
+            }
+            return true;
+        }
     }
     
     private HashSet<Integer> getHiddenEntity(Player p){
-    	HashSet<Integer> hiddenEntity = hiddenEntityPerPlayer.get(p.getUniqueId().toString());
-    	if(hiddenEntity == null){
-    		hiddenEntity = new HashSet<Integer>();
-    		hiddenEntityPerPlayer.put(p.getUniqueId().toString(), hiddenEntity);
-    	}
-		return hiddenEntity;
+        HashSet<Integer> hiddenEntity = hiddenEntityPerPlayer.get(p.getUniqueId().toString());
+        if(hiddenEntity == null){
+            hiddenEntity = new HashSet<Integer>();
+            hiddenEntityPerPlayer.put(p.getUniqueId().toString(), hiddenEntity);
+        }
+        return hiddenEntity;
     }
     
     private boolean isVisible(Player player, int entityID) {
-    	HashSet<Integer> hiddenEntity = getHiddenEntity(player);
-    	if(hiddenEntity.contains(entityID)){
-    		return false;
-    	}
-    	return true;
-	}
+        HashSet<Integer> hiddenEntity = getHiddenEntity(player);
+        if(hiddenEntity.contains(entityID)){
+            return false;
+        }
+        return true;
+    }
     
     // For valdiating the input parameters
     private void validate(Player observer, Entity entity) {
@@ -151,14 +151,14 @@ public class EntityHider implements Listener {
     // ==================== EVENTS ==================== 
     @EventHandler
     private void onEntityDeath(EntityDeathEvent e) {
-    	removeEntity(e.getEntity());
+        removeEntity(e.getEntity());
     }
     
     @EventHandler
     private void onChunkUnload(ChunkUnloadEvent e) {
-    	//DANGER HANDLER
+        //DANGER HANDLER
         for (Entity entity : e.getChunk().getEntities()) {
-        	removeEntity(entity);
+            removeEntity(entity);
         }
     }
     
@@ -169,21 +169,21 @@ public class EntityHider implements Listener {
     }
     
     private void removeEntity(Entity entity){
-    	hiddenEntityPerPlayer.forEach((k,hideEntities)->{
-    		Iterator<Integer> iter = hideEntities.iterator();
-    		while (iter.hasNext()) {
-    			Integer hideEntityId = iter.next();
+        hiddenEntityPerPlayer.forEach((k,hideEntities)->{
+            Iterator<Integer> iter = hideEntities.iterator();
+            while (iter.hasNext()) {
+                Integer hideEntityId = iter.next();
 
-    		    if (hideEntityId == entity.getEntityId())
-    		        iter.remove();
-    		}
-    	});
+                if (hideEntityId == entity.getEntityId())
+                    iter.remove();
+            }
+        });
     }
-	
-	
+    
+    
     // Packets that update remote player entities
     @SuppressWarnings("deprecation")
-	private static final PacketType[] ENTITY_PACKETS = { 
+    private static final PacketType[] ENTITY_PACKETS = { 
         ENTITY_EQUIPMENT, BED, ANIMATION, NAMED_ENTITY_SPAWN, 
         COLLECT, SPAWN_ENTITY, SPAWN_ENTITY_LIVING, SPAWN_ENTITY_PAINTING, SPAWN_ENTITY_EXPERIENCE_ORB, 
         ENTITY_VELOCITY, REL_ENTITY_MOVE, ENTITY_LOOK, ENTITY_MOVE_LOOK, ENTITY_MOVE_LOOK, 
@@ -206,7 +206,7 @@ public class EntityHider implements Listener {
                 }
             }
 
-			
+            
         };
     }
 }
