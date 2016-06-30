@@ -51,8 +51,8 @@ public class ESPCheckSchedule {
     @SuppressWarnings("deprecation")
     private void checkLookable(Player player, Entity target) {
         // plugin.log("p:%s t:%s", player.getName(), target.getName());
-        Location loc = player.getLocation().add(0, 1.625, 0);
-        Location target_loc = target.getLocation().add(0, 1, 0);
+        Location loc = player.getLocation().add(0, 1.125, 0); //1.625 - 0.5
+        Location target_loc = target.getLocation().add(0, 0.5, 0); // 1 - 0.5
 
         double distance = loc.distance(target_loc);
         double checked_distance = 0;
@@ -87,8 +87,10 @@ public class ESPCheckSchedule {
         vector1.multiply(VECTOR_LENGTH);
         distance -= DONT_HIDE_RANGE; // don't check if too near target
         while (checked_distance < distance) {
-            if (loc.getBlock().getType().isOccluding() && loc.clone().add(0, 0.5, 0).getBlock().getType().isOccluding()
-                    && loc.clone().add(0, -0.5, 0).getBlock().getType().isOccluding()) {
+            if (
+                    loc.getBlock().getType().isOccluding() && 
+                    loc.clone().add(0, 1, 0).getBlock().getType().isOccluding()
+                ) {
                 hider.hideEntity(player, target);
                 return;
             }
