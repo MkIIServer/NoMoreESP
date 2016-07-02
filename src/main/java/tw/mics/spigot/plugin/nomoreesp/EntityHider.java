@@ -14,6 +14,7 @@ import static com.comphenix.protocol.PacketType.Play.Server.ENTITY_METADATA;
 import static com.comphenix.protocol.PacketType.Play.Server.ENTITY_STATUS;
 import static com.comphenix.protocol.PacketType.Play.Server.ENTITY_TELEPORT;
 import static com.comphenix.protocol.PacketType.Play.Server.ENTITY_VELOCITY;
+import static com.comphenix.protocol.PacketType.Play.Server.MOUNT;
 import static com.comphenix.protocol.PacketType.Play.Server.NAMED_ENTITY_SPAWN;
 import static com.comphenix.protocol.PacketType.Play.Server.REL_ENTITY_MOVE;
 import static com.comphenix.protocol.PacketType.Play.Server.REMOVE_ENTITY_EFFECT;
@@ -84,6 +85,18 @@ public class EntityHider implements Listener {
         // Resend packets
         if (manager != null && hiddenBefore) {
             manager.updateEntity(entity, Arrays.asList(observer));
+            if(entity.isInsideVehicle()){
+                showEntity(observer, entity.getVehicle());
+                // Make the entity mount on Vehicle
+                PacketContainer mountEntity = new PacketContainer(MOUNT);
+                mountEntity.getIntegers().write(0, entity.getVehicle().getEntityId());
+                mountEntity.getIntegerArrays().write(0, new int[]{entity.getEntityId()});
+                try {
+                    manager.sendServerPacket(observer, mountEntity);
+                } catch (InvocationTargetException e) {
+                    throw new RuntimeException("Cannot send server packet.", e);
+                }
+            }
         }
         return hiddenBefore;
     }
