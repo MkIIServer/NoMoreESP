@@ -25,10 +25,9 @@ import static com.comphenix.protocol.PacketType.Play.Server.SPAWN_ENTITY_PAINTIN
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -43,6 +42,7 @@ import org.bukkit.plugin.Plugin;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.collections.ExpireHashMap;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
@@ -52,7 +52,7 @@ public class EntityHider implements Listener {
     private NoMoreESP plugin;
     private ProtocolManager manager;
     private PacketAdapter protocolListener;
-    private Map<String, HashSet<Integer>> hiddenEntityPerPlayer;
+    private ExpireHashMap<String, HashSet<Integer>> hiddenEntityPerPlayer;
     
     public EntityHider(NoMoreESP instance){
         this.plugin = instance;
@@ -62,8 +62,7 @@ public class EntityHider implements Listener {
         this.manager = ProtocolLibrary.getProtocolManager(); 
         
         //Init hiddenEntity
-        hiddenEntityPerPlayer = new HashMap<String, HashSet<Integer>>();
-        
+        hiddenEntityPerPlayer = new ExpireHashMap<String, HashSet<Integer>>();
         manager.addPacketListener(
                 protocolListener = constructProtocol(plugin));
     }
@@ -165,7 +164,7 @@ public class EntityHider implements Listener {
         HashSet<Integer> hiddenEntity = hiddenEntityPerPlayer.get(p.getUniqueId().toString());
         if(hiddenEntity == null){
             hiddenEntity = new HashSet<Integer>();
-            hiddenEntityPerPlayer.put(p.getUniqueId().toString(), hiddenEntity);
+            hiddenEntityPerPlayer.put(p.getUniqueId().toString(), hiddenEntity, 5, TimeUnit.MINUTES);
         }
         return hiddenEntity;
     }
@@ -200,12 +199,12 @@ public class EntityHider implements Listener {
     
     @EventHandler
     private void onPlayerQuit(PlayerQuitEvent e) {
-        hiddenEntityPerPlayer.remove(e.getPlayer().getUniqueId().toString());
+        hiddenEntityPerPlayer.removeKey(e.getPlayer().getUniqueId().toString());
         removeEntity(e.getPlayer());
     }
     
     private void removeEntity(Entity entity){
-        hiddenEntityPerPlayer.forEach((k,hideEntities)->{
+        hiddenEntityPerPlayer.asMap().forEach((k,hideEntities)->{
             Iterator<Integer> iter = hideEntities.iterator();
             while (iter.hasNext()) {
                 Integer hideEntityId = iter.next();
