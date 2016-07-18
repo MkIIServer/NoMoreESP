@@ -25,9 +25,12 @@ import static com.comphenix.protocol.PacketType.Play.Server.SPAWN_ENTITY_PAINTIN
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.concurrent.TimeUnit;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -42,7 +45,6 @@ import org.bukkit.plugin.Plugin;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.collections.ExpireHashMap;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
@@ -52,7 +54,7 @@ public class EntityHider implements Listener {
     private NoMoreESP plugin;
     private ProtocolManager manager;
     private PacketAdapter protocolListener;
-    private ExpireHashMap<String, HashSet<Integer>> hiddenEntityPerPlayer;
+    private HashMap<String, Set<Integer>> hiddenEntityPerPlayer;
     
     public EntityHider(NoMoreESP instance){
         this.plugin = instance;
@@ -62,7 +64,7 @@ public class EntityHider implements Listener {
         this.manager = ProtocolLibrary.getProtocolManager(); 
         
         //Init hiddenEntity
-        hiddenEntityPerPlayer = new ExpireHashMap<String, HashSet<Integer>>();
+        hiddenEntityPerPlayer = new HashMap<String, Set<Integer>>();
         manager.addPacketListener(
                 protocolListener = constructProtocol(plugin));
     }
@@ -146,7 +148,7 @@ public class EntityHider implements Listener {
      * @return TRUE if the entity was visible before this method call, FALSE otherwise.
      */
     private boolean setVisibility(Player observer, int entityID, boolean visible) {
-        HashSet<Integer> hiddenEntity = getHiddenEntity(observer);
+        Set<Integer> hiddenEntity = getHiddenEntity(observer);
         if(hiddenEntity.contains(entityID)){
             if(visible == true){
                 hiddenEntity.remove((Object)entityID);
@@ -160,17 +162,23 @@ public class EntityHider implements Listener {
         }
     }
     
-    private HashSet<Integer> getHiddenEntity(Player p){
-        HashSet<Integer> hiddenEntity = hiddenEntityPerPlayer.get(p.getUniqueId().toString());
+    private Set<Integer> getHiddenEntity(Player p){
+        Set<Integer> hiddenEntity = hiddenEntityPerPlayer.get(p.getUniqueId().toString());
         if(hiddenEntity == null){
-            hiddenEntity = new HashSet<Integer>();
-            hiddenEntityPerPlayer.put(p.getUniqueId().toString(), hiddenEntity, 5, TimeUnit.MINUTES);
+            hiddenEntity = Collections.newSetFromMap(new LinkedHashMap<Integer, Boolean>(){
+                private static final long serialVersionUID = -2512724413724781814L;
+                @Override
+                protected boolean removeEldestEntry(Map.Entry<Integer, Boolean> eldest) {
+                    return size() > 500;
+                }
+            });
+            hiddenEntityPerPlayer.put(p.getUniqueId().toString(), hiddenEntity);
         }
         return hiddenEntity;
     }
     
     private boolean isVisible(Player player, int entityID) {
-        HashSet<Integer> hiddenEntity = getHiddenEntity(player);
+        Set<Integer> hiddenEntity = getHiddenEntity(player);
         if(hiddenEntity.contains(entityID)){
             return false;
         }
@@ -199,12 +207,12 @@ public class EntityHider implements Listener {
     
     @EventHandler
     private void onPlayerQuit(PlayerQuitEvent e) {
-        hiddenEntityPerPlayer.removeKey(e.getPlayer().getUniqueId().toString());
+        hiddenEntityPerPlayer.remove(e.getPlayer().getUniqueId().toString());
         removeEntity(e.getPlayer());
     }
     
     private void removeEntity(Entity entity){
-        hiddenEntityPerPlayer.asMap().forEach((k,hideEntities)->{
+        hiddenEntityPerPlayer.forEach((k,hideEntities)->{
             Iterator<Integer> iter = hideEntities.iterator();
             while (iter.hasNext()) {
                 Integer hideEntityId = iter.next();
