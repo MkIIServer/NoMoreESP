@@ -79,23 +79,28 @@ public class EntityHider implements Listener {
         validate(observer, entity);
         boolean hiddenBefore = !setVisibility(observer, entity.getEntityId(), true);
         //plugin.log("%s can see %s now", observer.getName(), entity.getName());
-        if(entity.isDead()) {
+        if( entity.isDead() ) {
             removeEntity(entity);
             return hiddenBefore;
         }
         // Resend packets
         if (manager != null && hiddenBefore) {
-            manager.updateEntity(entity, Arrays.asList(observer));
-            if(entity.isInsideVehicle()){
-                showEntity(observer, entity.getVehicle());
-                // Make the entity mount on Vehicle
-                PacketContainer mountEntity = new PacketContainer(MOUNT);
-                mountEntity.getIntegers().write(0, entity.getVehicle().getEntityId());
-                mountEntity.getIntegerArrays().write(0, new int[]{entity.getEntityId()});
-                try {
-                    manager.sendServerPacket(observer, mountEntity);
-                } catch (InvocationTargetException e) {
-                    throw new RuntimeException("Cannot send server packet.", e);
+            try{
+                manager.updateEntity(entity, Arrays.asList(observer));
+            } catch (IllegalArgumentException e){
+                
+            } finally {
+                if(entity.isInsideVehicle()){
+                    showEntity(observer, entity.getVehicle());
+                    // Make the entity mount on Vehicle
+                    PacketContainer mountEntity = new PacketContainer(MOUNT);
+                    mountEntity.getIntegers().write(0, entity.getVehicle().getEntityId());
+                    mountEntity.getIntegerArrays().write(0, new int[]{entity.getEntityId()});
+                    try {
+                        manager.sendServerPacket(observer, mountEntity);
+                    } catch (InvocationTargetException e) {
+                        throw new RuntimeException("Cannot send server packet.", e);
+                    }
                 }
             }
         }
