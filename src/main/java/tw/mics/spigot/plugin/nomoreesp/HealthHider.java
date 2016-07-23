@@ -5,6 +5,7 @@ import static com.comphenix.protocol.PacketType.Play.Server.NAMED_ENTITY_SPAWN;
 import static com.comphenix.protocol.PacketType.Play.Server.SPAWN_ENTITY_LIVING;
 
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
@@ -49,7 +50,13 @@ public class HealthHider implements Listener {
             public void onPacketSending(PacketEvent event) {
                 PacketContainer packet = event.getPacket();
                 Entity e = packet.getEntityModifier(event).read(0);
-                if(e instanceof LivingEntity && packet.getWatchableCollectionModifier().read(0) != null){
+                if(     
+                        e instanceof LivingEntity && 
+                        packet.getWatchableCollectionModifier().read(0) != null &&
+                        e.getType() != EntityType.HORSE &&
+                        e.getType() != EntityType.PIG &&
+                        e.getType() != EntityType.WOLF
+                ){
                     event.setPacket(packet = packet.deepClone());
                     WrappedDataWatcher watcher = new WrappedDataWatcher(packet.getWatchableCollectionModifier().read(0));
                     processDataWatcher(watcher);
