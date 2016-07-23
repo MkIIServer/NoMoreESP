@@ -11,6 +11,7 @@ public class NoMoreESP extends JavaPlugin {
     public void onEnable() {
         INSTANCE = this;
         new ESPCheckSchedule(this);
+        new HealthHider(this);
     }
 
     public void log(String str, Object... args) {
