@@ -55,7 +55,8 @@ public class HealthHider implements Listener {
                         packet.getWatchableCollectionModifier().read(0) != null &&
                         e.getType() != EntityType.HORSE &&
                         e.getType() != EntityType.PIG &&
-                        e.getType() != EntityType.WOLF
+                        e.getType() != EntityType.WOLF &&
+                        e.getUniqueId() != event.getPlayer().getUniqueId()
                 ){
                     event.setPacket(packet = packet.deepClone());
                     WrappedDataWatcher watcher = new WrappedDataWatcher(packet.getWatchableCollectionModifier().read(0));
