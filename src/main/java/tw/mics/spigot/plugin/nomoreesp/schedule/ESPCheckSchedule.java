@@ -50,7 +50,6 @@ public class ESPCheckSchedule {
         }
     }
 
-    @SuppressWarnings("deprecation")
     private void checkLookable(Player player, Entity target) {
         // if not mobs/animal/boat/minecart/player ignore check
         if(Config.ONLY_PLAYER.getBoolean() && !(target instanceof Player)){
