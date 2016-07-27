@@ -10,8 +10,12 @@ public class NoMoreESP extends JavaPlugin {
     @Override
     public void onEnable() {
         INSTANCE = this;
+        Config.load();
+        
         new ESPCheckSchedule(this);
-        new HealthHider(this);
+        if(Config.SEND_FAKE_HEALTH.getBoolean()){
+            new HealthHider(this);
+        }
     }
 
     public void log(String str, Object... args) {

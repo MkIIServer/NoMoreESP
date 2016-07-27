@@ -3,10 +3,12 @@ package tw.mics.spigot.plugin.nomoreesp.schedule;
 import java.util.List;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
+import tw.mics.spigot.plugin.nomoreesp.Config;
 import tw.mics.spigot.plugin.nomoreesp.EntityHider;
 import tw.mics.spigot.plugin.nomoreesp.NoMoreESP;
 
@@ -17,8 +19,8 @@ public class ESPCheckSchedule {
     int schedule_id;
 
     // CONSTANT
-    final int PLAYER_TRACKING_RANGE = 64; // TODO get server setting
-    final int CHECK_TICK = 2;
+    int PLAYER_TRACKING_RANGE = Config.CHECK_DISTANCE.getInt();
+    int CHECK_TICK = Config.CHECK_TICK.getInt();
 
     final double DONT_HIDE_RANGE = 1.5; // 兩邊都會有作用 也就是實際距離是兩倍
     final double VECTOR_LENGTH = 0.8; // 每次增加確認的長
@@ -42,24 +44,28 @@ public class ESPCheckSchedule {
 
     protected void checkHide() {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
-            List<Entity> nearbyEntities = player.getNearbyEntities(PLAYER_TRACKING_RANGE,
-                    player.getWorld().getMaxHeight(), PLAYER_TRACKING_RANGE);
+            List<Entity> nearbyEntities = player.getNearbyEntities(PLAYER_TRACKING_RANGE * 2,
+                    player.getWorld().getMaxHeight(), PLAYER_TRACKING_RANGE * 2);
             nearbyEntities.forEach(target -> checkLookable(player, target));
         }
     }
 
     @SuppressWarnings("deprecation")
     private void checkLookable(Player player, Entity target) {
-        // plugin.log("p:%s t:%s", player.getName(), target.getName());
+        // if not mobs/animal/boat/minecart/player ignore check
+        if(Config.ONLY_PLAYER.getBoolean() && !(target instanceof Player)){
+            return;
+        } else if (!target.getType().isAlive()){
+            return;
+        }
+        
         Location loc = player.getLocation().add(0, 1.125, 0); //1.625 - 0.5
         Location target_loc = target.getLocation().add(0, 0.5, 0); // 1 - 0.5
-
+        
         double distance = loc.distance(target_loc);
         double checked_distance = 0;
-
-        // if not mobs/animal/boat/minecart/player ignore check
-        if ((target.getType().getTypeId() < 40 || target.getType().getTypeId() > 120) && !(target instanceof Player))
-            return;
+        
+        if(distance > PLAYER_TRACKING_RANGE) return;
 
         // too near, force show
         if (distance < DONT_HIDE_RANGE * 2) {
@@ -88,8 +94,8 @@ public class ESPCheckSchedule {
         distance -= DONT_HIDE_RANGE; // don't check if too near target
         while (checked_distance < distance) {
             if (
-                    loc.getBlock().getType().isOccluding() && 
-                    loc.clone().add(0, 1, 0).getBlock().getType().isOccluding()
+                    isOccluding(loc.getBlock().getType()) && 
+                    isOccluding(loc.add(0, 1, 0).getBlock().getType())
                 ) {
                 hider.hideEntity(player, target);
                 return;
@@ -102,5 +108,96 @@ public class ESPCheckSchedule {
 
     public void removeRunnable() {
         this.plugin.getServer().getScheduler().cancelTask(schedule_id);
+    }
+    
+    //same as Material, but remove barrier
+    public boolean isOccluding(Material m) {
+        if (!m.isBlock()) {
+            return false;
+        }
+        switch (m) {
+            case STONE:
+            case GRASS:
+            case DIRT:
+            case COBBLESTONE:
+            case WOOD:
+            case BEDROCK:
+            case SAND:
+            case GRAVEL:
+            case GOLD_ORE:
+            case IRON_ORE:
+            case COAL_ORE:
+            case LOG:
+            case SPONGE:
+            case LAPIS_ORE:
+            case LAPIS_BLOCK:
+            case DISPENSER:
+            case SANDSTONE:
+            case NOTE_BLOCK:
+            case WOOL:
+            case GOLD_BLOCK:
+            case IRON_BLOCK:
+            case DOUBLE_STEP:
+            case BRICK:
+            case BOOKSHELF:
+            case MOSSY_COBBLESTONE:
+            case OBSIDIAN:
+            case MOB_SPAWNER:
+            case DIAMOND_ORE:
+            case DIAMOND_BLOCK:
+            case WORKBENCH:
+            case FURNACE:
+            case BURNING_FURNACE:
+            case REDSTONE_ORE:
+            case GLOWING_REDSTONE_ORE:
+            case SNOW_BLOCK:
+            case CLAY:
+            case JUKEBOX:
+            case PUMPKIN:
+            case NETHERRACK:
+            case SOUL_SAND:
+            case JACK_O_LANTERN:
+            case MONSTER_EGGS:
+            case SMOOTH_BRICK:
+            case HUGE_MUSHROOM_1:
+            case HUGE_MUSHROOM_2:
+            case MELON_BLOCK:
+            case MYCEL:
+            case NETHER_BRICK:
+            case ENDER_STONE:
+            case REDSTONE_LAMP_OFF:
+            case REDSTONE_LAMP_ON:
+            case WOOD_DOUBLE_STEP:
+            case EMERALD_ORE:
+            case EMERALD_BLOCK:
+            case COMMAND:
+            case QUARTZ_ORE:
+            case QUARTZ_BLOCK:
+            case DROPPER:
+            case STAINED_CLAY:
+            case HAY_BLOCK:
+            case HARD_CLAY:
+            case COAL_BLOCK:
+            case LOG_2:
+            case PACKED_ICE:
+            case SLIME_BLOCK:
+            case PRISMARINE:
+            case RED_SANDSTONE:
+            case DOUBLE_STONE_SLAB2:
+            case PURPUR_BLOCK:
+            case PURPUR_PILLAR:
+            case PURPUR_DOUBLE_SLAB:
+            case END_BRICKS:
+            case STRUCTURE_BLOCK:
+            case COMMAND_REPEATING:
+            case COMMAND_CHAIN:
+            case MAGMA:
+            case NETHER_WART_BLOCK:
+            case RED_NETHER_BRICK:
+            case BONE_BLOCK:
+                return true;
+            default:
+                return false;
+        }
     }
 }
