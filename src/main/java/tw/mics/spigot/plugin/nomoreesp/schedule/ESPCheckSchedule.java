@@ -1,5 +1,6 @@
 package tw.mics.spigot.plugin.nomoreesp.schedule;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Location;
@@ -44,19 +45,25 @@ public class ESPCheckSchedule {
 
     protected void checkHide() {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
-            List<Entity> nearbyEntities = player.getNearbyEntities(PLAYER_TRACKING_RANGE * 2,
-                    player.getWorld().getMaxHeight(), PLAYER_TRACKING_RANGE * 2);
-            nearbyEntities.forEach(target -> checkLookable(player, target));
+            if(Config.ONLY_PLAYER.getBoolean()){
+                List<Player> otherPlayers = new ArrayList<Player>(plugin.getServer().getOnlinePlayers());
+                otherPlayers.remove(player);
+                otherPlayers.forEach(target -> {
+                    if(player.getWorld() == target.getWorld())
+                        checkLookable(player, target);
+                });
+            } else {
+                List<Entity> nearbyEntities = player.getNearbyEntities(PLAYER_TRACKING_RANGE * 2,
+                        player.getWorld().getMaxHeight(), PLAYER_TRACKING_RANGE * 2);
+                nearbyEntities.forEach(target -> {
+                    if(target.getType().isAlive())
+                        checkLookable(player, target);
+                });
+            }
         }
     }
 
     private void checkLookable(Player player, Entity target) {
-        // if not mobs/animal/boat/minecart/player ignore check
-        if(Config.ONLY_PLAYER.getBoolean() && !(target instanceof Player)){
-            return;
-        } else if (!target.getType().isAlive()){
-            return;
-        }
         
         Location loc = player.getLocation().add(0, 1.125, 0); //1.625 - 0.5
         Location target_loc = target.getLocation().add(0, 0.5, 0); // 1 - 0.5
