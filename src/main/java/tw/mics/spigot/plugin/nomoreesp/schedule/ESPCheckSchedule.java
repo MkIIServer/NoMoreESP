@@ -69,6 +69,9 @@ public class ESPCheckSchedule {
             public void run() {
                 Location loc = player.getLocation().add(0, 1.625, 0); //1.625
                 Location target_loc = target.getLocation().add(0, 1, 0); // 1
+                if(loc.getWorld() != target_loc.getWorld()) return; //check again
+                if(!loc.getChunk().isLoaded())return;               //check loaded
+                if(!target_loc.getChunk().isLoaded())return;        //check loaded
                 
                 double distance = loc.distance(target_loc);
                 double checked_distance = 0;
