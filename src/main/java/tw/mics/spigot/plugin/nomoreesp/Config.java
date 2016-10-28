@@ -11,8 +11,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 public enum Config {
 
     ONLY_PLAYER("only-player", false, "ESP check is only on player?"),
-    CHECK_TICK("check-tick-period", 2, "ESP check period"),
-    CHECK_DISTANCE("check-distance", 48, "please setup this same as your spigot.yml entity-tracking-range"),
     SEND_FAKE_HEALTH("fake-health", true, "entities health is fake to player (anti health display)");
 
     private final Object value;
