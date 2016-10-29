@@ -39,7 +39,6 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.plugin.Plugin;
 
 import com.comphenix.protocol.PacketType;
@@ -202,6 +201,7 @@ public class EntityHider implements Listener {
         removeEntity(e.getEntity());
     }
     
+    /* 只好犧牲記憶體
     @EventHandler
     private void onChunkUnload(ChunkUnloadEvent e) {
         //DANGER HANDLER
@@ -209,6 +209,7 @@ public class EntityHider implements Listener {
             removeEntity(entity);
         }
     }
+    */
     
     @EventHandler
     private void onPlayerQuit(PlayerQuitEvent e) {
