@@ -24,7 +24,7 @@ public class ESPCheckSchedule {
     int TRACKING_RANGE = 64;
 
     final double DONT_HIDE_RANGE = 4; // 兩邊都會有作用 也就是實際距離是兩倍
-    final double VECTOR_LENGTH = 0.5; // 每次增加確認的長
+    final double VECTOR_LENGTH = 0.8; // 每次增加確認的長
     final double HIDE_DEGREES = 70; // 此角度外則隱藏
 
     public ESPCheckSchedule(NoMoreESP i) {
@@ -39,7 +39,7 @@ public class ESPCheckSchedule {
                 checkHide();
             }
         };
-        schedule_id = this.plugin.getServer().getScheduler().scheduleSyncRepeatingTask(this.plugin, runnable, 0, 1);
+        schedule_id = this.plugin.getServer().getScheduler().scheduleSyncRepeatingTask(this.plugin, runnable, 0, 2);
     }
 
     protected void checkHide() {

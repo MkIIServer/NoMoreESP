@@ -201,16 +201,6 @@ public class EntityHider implements Listener {
         removeEntity(e.getEntity());
     }
     
-    /* 只好犧牲記憶體
-    @EventHandler
-    private void onChunkUnload(ChunkUnloadEvent e) {
-        //DANGER HANDLER
-        for (Entity entity : e.getChunk().getEntities()) {
-            removeEntity(entity);
-        }
-    }
-    */
-    
     @EventHandler
     private void onPlayerQuit(PlayerQuitEvent e) {
         hiddenEntityPerPlayer.remove(e.getPlayer().getUniqueId().toString());
