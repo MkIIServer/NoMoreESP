@@ -108,6 +108,7 @@ public class ESPCheckSchedule {
                 distance -= DONT_HIDE_RANGE; // don't check if too near target
                 while (checked_distance < distance) {
                     //player.sendBlockChange(loc, Material.GLASS, (byte) 0);
+                    if(!loc.getChunk().isLoaded())return; //check loaded
                     if (isOccluding(loc.getBlock().getType())) {
                         hider.hideEntity(player, target);
                         return;
