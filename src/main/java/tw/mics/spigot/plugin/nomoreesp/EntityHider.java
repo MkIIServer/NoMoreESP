@@ -219,7 +219,6 @@ public class EntityHider implements Listener {
         });
     }
     
-    
     // Packets that update remote player entities
     private static final PacketType[] ENTITY_PACKETS = { 
         ENTITY_EQUIPMENT, BED, ANIMATION, NAMED_ENTITY_SPAWN, 

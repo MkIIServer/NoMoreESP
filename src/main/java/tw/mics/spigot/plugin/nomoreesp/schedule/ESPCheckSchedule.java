@@ -1,6 +1,5 @@
 package tw.mics.spigot.plugin.nomoreesp.schedule;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -8,9 +7,9 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Villager;
 import org.bukkit.util.Vector;
 
-import tw.mics.spigot.plugin.nomoreesp.Config;
 import tw.mics.spigot.plugin.nomoreesp.EntityHider;
 import tw.mics.spigot.plugin.nomoreesp.NoMoreESP;
 
@@ -44,38 +43,29 @@ public class ESPCheckSchedule {
 
     protected void checkHide() {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
-            if(Config.ONLY_PLAYER.getBoolean()){
-                List<Player> otherPlayers = new ArrayList<Player>(plugin.getServer().getOnlinePlayers());
-                otherPlayers.remove(player);
-                otherPlayers.forEach(target -> {
-                    if(player.getWorld() == target.getWorld())
-                        checkLookable(player, target);
-                });
-            } else {
-                List<Entity> nearbyEntities = player.getNearbyEntities(TRACKING_RANGE * 2,
-                        player.getWorld().getMaxHeight(), TRACKING_RANGE * 2);
-                nearbyEntities.forEach(target -> {
-                    if(target.getType().isAlive())
-                        checkLookable(player, target);
-                });
-            }
+            List<Entity> nearbyEntities = player.getNearbyEntities(TRACKING_RANGE * 2,
+                    player.getWorld().getMaxHeight(), TRACKING_RANGE * 2);
+            nearbyEntities.forEach(target -> {
+                if(target instanceof Player || target instanceof Villager)
+                    checkLookable(player, target);
+            });
         }
     }
 
     @SuppressWarnings("deprecation")
     private void checkLookable(Player player, Entity target) {
+        Location loc = player.getLocation().add(0, 1.625, 0); //1.625
+        Location target_loc = target.getLocation().add(0, 1, 0); // 1
+        if(!loc.getChunk().isLoaded())return;               //check loaded
+        if(!target_loc.getChunk().isLoaded())return;        //check loaded
+        if(loc.getWorld() != target_loc.getWorld()) return; //check again
         this.plugin.getServer().getScheduler().scheduleAsyncDelayedTask(this.plugin, new Runnable(){
             @Override
             public void run() {
-                Location loc = player.getLocation().add(0, 1.625, 0); //1.625
-                Location target_loc = target.getLocation().add(0, 1, 0); // 1
-                if(loc.getWorld() != target_loc.getWorld()) return; //check again
-                if(!loc.getChunk().isLoaded())return;               //check loaded
-                if(!target_loc.getChunk().isLoaded())return;        //check loaded
-                
                 double distance = loc.distance(target_loc);
                 double checked_distance = 0;
-                
+
+                // too far, force hide
                 if(distance > TRACKING_RANGE){
                     hider.hideEntity(player, target);
                     return;
@@ -87,6 +77,7 @@ public class ESPCheckSchedule {
                     return;
                 }
 
+                // 計算  loc to target_log 單位向量
                 Vector vector1 = target_loc.subtract(loc).toVector();
                 vector1.multiply(1 / vector1.length());
 
