@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.util.Vector;
 
+import tw.mics.spigot.plugin.nomoreesp.Config;
 import tw.mics.spigot.plugin.nomoreesp.EntityHider;
 import tw.mics.spigot.plugin.nomoreesp.NoMoreESP;
 
@@ -43,6 +44,9 @@ public class ESPCheckSchedule {
 
     protected void checkHide() {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
+            if (!Config.ENABLE_WORLDS.getStringList().contains(player.getWorld().getName())){
+                break;
+            }
             List<Entity> nearbyEntities = player.getNearbyEntities(TRACKING_RANGE * 2,
                     player.getWorld().getMaxHeight(), TRACKING_RANGE * 2);
             nearbyEntities.forEach(target -> {

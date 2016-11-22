@@ -2,6 +2,7 @@ package tw.mics.spigot.plugin.nomoreesp;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -11,7 +12,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 public enum Config {
 
     ONLY_PLAYER("only-player", false, "ESP check is only on player?"),
-    SEND_FAKE_HEALTH("fake-health", true, "entities health is fake to player (anti health display)");
+    SEND_FAKE_HEALTH("fake-health", true, "entities health is fake to player (anti health display)"),
+    ENABLE_WORLDS("enable-worlds", Arrays.asList("world","world_nether","world_the_end"), "entities on these worlds will be hide");
 
     private final Object value;
     private final String path;
