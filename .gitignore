@@ -7,3 +7,8 @@
 /.externalToolBuilders
 /.project
 /.settings
+
+#IntelliJ IDEA
+/.idea
+*.iml
+
