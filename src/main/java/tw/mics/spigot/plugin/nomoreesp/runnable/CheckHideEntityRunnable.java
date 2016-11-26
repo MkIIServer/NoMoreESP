@@ -49,20 +49,10 @@ public class CheckHideEntityRunnable implements Runnable {
 
         // 計算+1
         Vector vector = target_loc.subtract(loc).toVector();
-
-
-        // 在視角外則隱藏
-        Vector A = vector.clone().multiply(1/vector.length());
-        Vector B = loc.getDirection();
-        double degrees = Math.toDegrees(Math.acos(B.dot(A)));
-        if (degrees > HIDE_DEGREES) {
-            hider.hideEntity(player, target);
-            return;
-        }
         
-        double x = vector.getX();
-        double y = vector.getY();
-        double z = vector.getZ();
+        double x = Math.abs(vector.getX());
+        double y = Math.abs(vector.getY());
+        double z = Math.abs(vector.getZ());
         if( x > y && x > z){
             vector.multiply(1/x);
         } else if( y > x && y > z){
@@ -70,12 +60,20 @@ public class CheckHideEntityRunnable implements Runnable {
         } else {
             vector.multiply(1/z);
         }
+        
+        // 在視角外則隱藏
+        Vector A = vector;
+        Vector B = loc.getDirection();
+        double degrees = Math.toDegrees(Math.acos(B.dot(A)/vector.length()));
+        if (degrees > HIDE_DEGREES) {
+            hider.hideEntity(player, target);
+            return;
+        }
 
         
         // 判斷是否被方塊擋住
-        //checked_distance += vector.length() * DONT_HIDE_RANGE;
-        //loc.add(vector.clone().multiply(DONT_HIDE_RANGE));
-        //distance -=  vector.length() * DONT_HIDE_RANGE; // don't check if too near target
+        checked_distance += vector.length();
+        loc.add(vector);
         while (checked_distance < distance) {
             //player.getWorld().spawnParticle(Particle.DRIP_LAVA, loc.getX(), loc.getY(), loc.getZ(), 1, 0, 0, 0);
             if (loc.getBlock().getType().isOccluding()) {
