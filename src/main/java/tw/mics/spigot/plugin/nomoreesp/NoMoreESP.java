@@ -3,7 +3,7 @@ package tw.mics.spigot.plugin.nomoreesp;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import tw.mics.spigot.plugin.nomoreesp.schedule.ESPCheckSchedule;
+import tw.mics.spigot.plugin.nomoreesp.schedule.CheckSchedule;
 
 public class NoMoreESP extends JavaPlugin {
     private static NoMoreESP INSTANCE;
@@ -12,8 +12,8 @@ public class NoMoreESP extends JavaPlugin {
     public void onEnable() {
         INSTANCE = this;
         Config.load();
-        if(Config.HIDE_ENTITY_ENABLE.getBoolean()){
-            new ESPCheckSchedule(this);
+        if(Config.HIDE_ENTITY_ENABLE.getBoolean() || Config.XRAY_DETECT_ENABLE.getBoolean()){
+            new CheckSchedule(this);
         }
         if(Config.FAKE_HEALTH_ENABLE.getBoolean()){
             new HealthHider(this);
