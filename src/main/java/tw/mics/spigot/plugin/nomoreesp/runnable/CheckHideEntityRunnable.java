@@ -14,7 +14,7 @@ import tw.mics.spigot.plugin.nomoreesp.NoMoreESP;
 
 public class CheckHideEntityRunnable implements Runnable {
     final double DONT_HIDE_RANGE = 4;  // 兩邊都會有作用 也就是實際距離是兩倍
-    final double HIDE_DEGREES = 70;    // 此角度外則隱藏
+    final double HIDE_DEGREES = 60;    // 此角度外則隱藏
     
     EntityHider hider;
     Player player;
@@ -48,53 +48,46 @@ public class CheckHideEntityRunnable implements Runnable {
         }
 
         // 計算+1
-        Vector vector1 = target_loc.subtract(loc).toVector();
-        vector1.multiply(1 / vector1.length());
-        double x = vector1.getX();
-        double y = vector1.getY();
-        double z = vector1.getZ();
-        if( x > y && x > z){
-            x = 1;
-            y *= 1/x;
-            z *= 1/x;
-        } else if( y > x && y > z){
-            x *= 1/y;
-            y = 1;
-            z *= 1/y;
-        } else if( z > x && z > y){
-            x *= 1/z;
-            y *= 1/z;
-            z = 1;
-        }
-        vector1 = new Vector(x, y, z);
+        Vector vector = target_loc.subtract(loc).toVector();
+
 
         // 在視角外則隱藏
-        Vector A = vector1.clone();
+        Vector A = vector.clone().multiply(1/vector.length());
         Vector B = loc.getDirection();
-        double degrees = Math.toDegrees(Math.acos(A.dot(B) / A.length() * B.length()));
+        double degrees = Math.toDegrees(Math.acos(B.dot(A)));
         if (degrees > HIDE_DEGREES) {
             hider.hideEntity(player, target);
             return;
         }
+        
+        double x = vector.getX();
+        double y = vector.getY();
+        double z = vector.getZ();
+        if( x > y && x > z){
+            vector.multiply(1/x);
+        } else if( y > x && y > z){
+            vector.multiply(1/y);
+        } else {
+            vector.multiply(1/z);
+        }
 
-        // don't check too near block
-        checked_distance += DONT_HIDE_RANGE;
-        loc.add(vector1.clone().add(vector1));
-
+        
         // 判斷是否被方塊擋住
-        distance -= DONT_HIDE_RANGE; // don't check if too near target
+        //checked_distance += vector.length() * DONT_HIDE_RANGE;
+        //loc.add(vector.clone().multiply(DONT_HIDE_RANGE));
+        //distance -=  vector.length() * DONT_HIDE_RANGE; // don't check if too near target
         while (checked_distance < distance) {
-            //player.sendBlockChange(loc, Material.GLASS, (byte) 0);
-            if(!loc.getChunk().isLoaded())return; //check loaded
+            //player.getWorld().spawnParticle(Particle.DRIP_LAVA, loc.getX(), loc.getY(), loc.getZ(), 1, 0, 0, 0);
             if (loc.getBlock().getType().isOccluding()) {
                 hider.hideEntity(player, target);
                 return;
             }
-            checked_distance += vector1.length();
-            loc.add(vector1);
+            checked_distance += vector.length();
+            loc.add(vector);
         }
         this.showEntity(player, target);
     }
+    
     private void showEntity(Player player, Entity target){
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(NoMoreESP.getInstance(), new Runnable(){
             @Override

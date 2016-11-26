@@ -41,7 +41,6 @@ public class CheckSchedule {
         schedule_id = this.plugin.getServer().getScheduler().scheduleSyncRepeatingTask(this.plugin, runnable, 0, 2);
     }
 
-    @SuppressWarnings("deprecation")
     protected void checkHide() {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
             if (!Config.HIDE_ENTITY_ENABLE_WORLDS.getStringList().contains(player.getWorld().getName())){
@@ -54,20 +53,19 @@ public class CheckSchedule {
                         player.getWorld().getMaxHeight(), Config.HIDE_ENTITY_HIDE_RANGE.getInt() * 2);
                 
                 nearbyEntities.forEach(target -> {
-                    if(hide_list.contains(target.getType()))
+                    if(hide_list.contains(target.getType()) && target != player)
                         checkLookable(player, target);
                 });
             }
             
             //xray
             if(Config.XRAY_DETECT_ENABLE.getBoolean())
-                this.plugin.getServer().getScheduler().scheduleAsyncDelayedTask(this.plugin, new CheckXRayRunnable(player), 0);
+                new Thread(new CheckXRayRunnable(player)).run();
         }
     }
 
-    @SuppressWarnings("deprecation")
     private void checkLookable(Player player, Entity target) {
-        this.plugin.getServer().getScheduler().scheduleAsyncDelayedTask(this.plugin, new CheckHideEntityRunnable(hider, player, target), 0);
+        new Thread(new CheckHideEntityRunnable(hider, player, target)).run();
         
 
     }
