@@ -19,10 +19,14 @@ public class CheckSchedule {
     public EntityHider hider;
     int schedule_id;
     private HashSet<EntityType> hide_list;
+    private int loadchunk_range;
 
     public CheckSchedule(NoMoreESP i) {
         plugin = i;
         this.hider = new EntityHider(plugin);
+        
+        //load chunk range
+        loadchunk_range = (int) Math.ceil(Config.HIDE_ENTITY_HIDE_RANGE.getDouble() / 16);
         //load config
         hide_list = new HashSet<EntityType>();
         for(String type : Config.HIDE_ENTITY_HIDE_LIST.getStringList()){
@@ -35,13 +39,13 @@ public class CheckSchedule {
     private void setupRunnable() {
         runnable = new Runnable() {
             public void run() {
-                checkHide();
+                check();
             }
         };
         schedule_id = this.plugin.getServer().getScheduler().scheduleSyncRepeatingTask(this.plugin, runnable, 0, 2);
     }
 
-    protected void checkHide() {
+    protected void check() {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
             if (!Config.HIDE_ENTITY_ENABLE_WORLDS.getStringList().contains(player.getWorld().getName())){
                 continue;
@@ -51,11 +55,16 @@ public class CheckSchedule {
             if(Config.HIDE_ENTITY_ENABLE.getBoolean()){
                 List<Entity> nearbyEntities = player.getNearbyEntities(Config.HIDE_ENTITY_HIDE_RANGE.getInt() * 2,
                         player.getWorld().getMaxHeight(), Config.HIDE_ENTITY_HIDE_RANGE.getInt() * 2);
-                
-                nearbyEntities.forEach(target -> {
-                    if(hide_list.contains(target.getType()) && target != player)
-                        checkLookable(player, target);
-                });
+                nearbyEntities.remove(player);
+                new Thread(new Runnable(){
+                    @Override
+                    public void run() {
+                        nearbyEntities.forEach(target -> {
+                            if(hide_list.contains(target.getType()))
+                                checkLookable(player, target);
+                        });
+                    }
+                }).start();
             }
             
             //xray

@@ -167,7 +167,12 @@ public class EntityHider implements Listener {
     }
     
     private Set<Integer> getHiddenEntity(Player p){
-        Set<Integer> hiddenEntity = hiddenEntityPerPlayer.get(p.getUniqueId().toString());
+        Set<Integer> hiddenEntity = null;
+        try {
+            hiddenEntity = hiddenEntityPerPlayer.get(p.getUniqueId().toString());
+        } catch (UnsupportedOperationException e){
+            return null;
+        }
         if(hiddenEntity == null){
             hiddenEntity = Collections.newSetFromMap(new LinkedHashMap<Integer, Boolean>(){
                 private static final long serialVersionUID = -2512724413724781814L;
@@ -183,7 +188,9 @@ public class EntityHider implements Listener {
     
     private boolean isVisible(Player player, int entityID) {
         Set<Integer> hiddenEntity = getHiddenEntity(player);
-        if(hiddenEntity.contains(entityID)){
+        if (hiddenEntity == null){
+            return true;
+        } else if(hiddenEntity.contains(entityID)){
             return false;
         }
         return true;
