@@ -45,7 +45,7 @@ public class ESPCheckSchedule {
     protected void checkHide() {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
             if (!Config.ENABLE_WORLDS.getStringList().contains(player.getWorld().getName())){
-                break;
+                continue;
             }
             List<Entity> nearbyEntities = player.getNearbyEntities(TRACKING_RANGE * 2,
                     player.getWorld().getMaxHeight(), TRACKING_RANGE * 2);
