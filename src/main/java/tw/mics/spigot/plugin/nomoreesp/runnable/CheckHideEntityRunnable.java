@@ -75,13 +75,17 @@ public class CheckHideEntityRunnable implements Runnable {
         checked_distance += vector.length();
         loc.add(vector);
         while (checked_distance < distance) {
-            //player.getWorld().spawnParticle(Particle.DRIP_LAVA, loc.getX(), loc.getY(), loc.getZ(), 1, 0, 0, 0);
-            if (loc.getBlock().getType().isOccluding()) {
-                hider.hideEntity(player, target);
-                return;
+            try{
+                //player.getWorld().spawnParticle(Particle.DRIP_LAVA, loc.getX(), loc.getY(), loc.getZ(), 1, 0, 0, 0);
+                if (loc.getBlock().getType().isOccluding()) {
+                    hider.hideEntity(player, target);
+                    return;
+                }
+                checked_distance += vector.length();
+                loc.add(vector);          
+            } catch (IllegalStateException e){
+                break; //skip when error
             }
-            checked_distance += vector.length();
-            loc.add(vector);
         }
         this.showEntity(player, target);
     }

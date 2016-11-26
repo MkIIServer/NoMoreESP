@@ -37,7 +37,12 @@ public class CheckXRayRunnable implements Runnable {
         }
         for(int i = 0; i < 20 ; i++) {
             loc.add(vector);
-            Double value = XRayDetect.getBlockValue().get(loc.getBlock().getType());
+            Double value = null;
+            try{
+                value = XRayDetect.getBlockValue().get(loc.getBlock().getType());
+            } catch (IllegalStateException e){
+                break; //skip when error
+            }
             if (value != null) {
                 LinkedHashMap<Block, Double> block_value_set = XRayDetect.getBreakAddVL(player);
                 
