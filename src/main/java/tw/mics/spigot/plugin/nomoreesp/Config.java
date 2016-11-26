@@ -23,7 +23,7 @@ public enum Config {
     XRAY_DETECT_ENABLE("xray-detect.enable", true, ""),
     XRAY_DETECT_ADD_VL_BLOCK_AND_NUMBER("xray-detect.vl-list", Arrays.asList(
             "DIAMOND_ORE:5",
-            "IRON_ORE:1",
+            "IRON_ORE:0.5",
             "GOLD_ORE:5",
             "CHEST:10"
             ), ""),
