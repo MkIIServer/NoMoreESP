@@ -1,6 +1,7 @@
 package tw.mics.spigot.plugin.nomoreesp;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -11,10 +12,12 @@ import org.bukkit.entity.Player;
 
 public class XRayDetect {
     static HashMap<Player, LinkedHashMap<Block,Double>> player_break_block_add_vl;
+    static HashMap<Player, HashSet<Block>> player_breaked_block;
     static HashMap<Player, Double> player_vl;
     static HashMap<Material, Double> config_block_value;
     public static void initData(){
         player_break_block_add_vl = new HashMap<Player, LinkedHashMap<Block,Double>>();
+        player_breaked_block = new HashMap<Player, HashSet<Block>>();
         player_vl = new HashMap<Player, Double>();
         config_block_value = new HashMap<Material, Double>();
         
@@ -27,8 +30,8 @@ public class XRayDetect {
     }
 
     public static void checkPlayerDataExist(Player player){
+        int maxEntries = 1000;
         if(!player_break_block_add_vl.containsKey(player)){
-            int maxEntries = 1000;
             player_break_block_add_vl.put(player,new LinkedHashMap<Block,Double>(maxEntries*10/7, 0.7f, true){
                 private static final long serialVersionUID = 7122398289557675273L;
                 @Override
@@ -37,6 +40,9 @@ public class XRayDetect {
                 }
             });
         }
+        if(!player_breaked_block.containsKey(player)){
+            player_breaked_block.put(player,new HashSet<Block>());
+        }
         if(!player_vl.containsKey(player)){
             player_vl.put(player, 0.0);
         }
@@ -44,6 +50,8 @@ public class XRayDetect {
     
     public static void removePlayer(Player player){
         player_break_block_add_vl.remove(player);
+        player_breaked_block.remove(player);
+        player_vl.remove(player);
     }
     
     public static LinkedHashMap<Block, Double> getBreakAddVL(Player player){
@@ -58,20 +66,40 @@ public class XRayDetect {
     public static void playerBreakBlock(Player player, Block block) {
         checkPlayerDataExist(player);
         Double vl = player_break_block_add_vl.get(player).get(block);
-        if(vl != null){
-            player_vl.put(player, player_vl.get(player) + vl);
-            if(Config.DEBUG.getBoolean()){
-                NoMoreESP.getInstance().log(player.getName() + "'s VL is now " + player_vl.get(player));
-            }
+        HashSet<Block> breaked_block = player_breaked_block.get(player);
+        
+        
+        //如果有值
+
+        if(vl != null){        
+            if(breaked_block.contains(block)) return;
+            breaked_block.add(block);
             
+            player_vl.put(player, player_vl.get(player) + vl);
+            
+            //reach vl and run command
             if(player_vl.get(player) > Config.XRAY_DETECT_RUN_COMMAND_VL.getInt()){
+                //log
+                NoMoreESP.getInstance().logInToFile("Player " + player.getName() +
+                        " is reach command vl (now vl is " + player_vl.get(player) + ")" );
+                
+                //run command
                 String str = Config.XRAY_DETECT_RUN_COMMAND.getString().replace("%PLAYER%", player.getName());
                 if(!str.isEmpty()) Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), str);
-                NoMoreESP.getInstance().logInToFile("Player " + player.getName() +
-                        " is reach command vl (now vl is" + player_vl.get(player) + ")" );
+                
+                //reset vl
+                player_vl.put(player, 0.0);
             }
+            
         } else if(player_vl.get(player) > 0) {
             player_vl.put(player, player_vl.get(player) - 1);
+        } else {
+            return;
+        }
+        
+        //debug message
+        if(Config.DEBUG.getBoolean()){
+            NoMoreESP.getInstance().log(player.getName() + "'s VL is now " + player_vl.get(player));
         }
     }
 }
