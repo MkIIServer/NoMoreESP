@@ -60,12 +60,12 @@ public class CheckSchedule {
             
             //xray
             if(Config.XRAY_DETECT_ENABLE.getBoolean())
-                new Thread(new CheckXRayRunnable(player)).run();
+                new Thread(new CheckXRayRunnable(player)).start();
         }
     }
 
     private void checkLookable(Player player, Entity target) {
-        new Thread(new CheckHideEntityRunnable(hider, player, target)).run();
+        new Thread(new CheckHideEntityRunnable(hider, player, target)).start();
         
 
     }
