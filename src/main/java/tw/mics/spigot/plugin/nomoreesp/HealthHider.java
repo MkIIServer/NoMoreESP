@@ -4,6 +4,8 @@ import static com.comphenix.protocol.PacketType.Play.Server.ENTITY_METADATA;
 import static com.comphenix.protocol.PacketType.Play.Server.NAMED_ENTITY_SPAWN;
 import static com.comphenix.protocol.PacketType.Play.Server.SPAWN_ENTITY_LIVING;
 
+import java.util.HashSet;
+
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -23,6 +25,7 @@ public class HealthHider implements Listener {
     private NoMoreESP plugin;
     private ProtocolManager manager;
     private PacketAdapter protocolListener;
+    private HashSet<EntityType> disable_list;
     
     public HealthHider(NoMoreESP instance){
         this.plugin = instance;
@@ -32,8 +35,13 @@ public class HealthHider implements Listener {
         this.manager = ProtocolLibrary.getProtocolManager(); 
         
         //Init hiddenEntity
-        manager.addPacketListener(
-                protocolListener = constructProtocol(plugin));
+        manager.addPacketListener(protocolListener = constructProtocol(plugin));
+        
+        //load config
+        disable_list = new HashSet<EntityType>();
+        for(String type:Config.FAKE_HEALTH_DISABLE_LIST.getStringList()){
+            disable_list.add(EntityType.valueOf(type));
+        }
     }
     
  // Packets that update remote player entities
@@ -51,13 +59,11 @@ public class HealthHider implements Listener {
                 PacketContainer packet = event.getPacket();
                 Entity e = packet.getEntityModifier(event).read(0);
                 if(     
-                        e instanceof LivingEntity && 
+                        e instanceof LivingEntity &&
+                        Config.FAKE_HEALTH_ENABLE_WORLDS.getStringList().contains(e.getWorld().getName()) && 
                         packet.getWatchableCollectionModifier().read(0) != null &&
-                        e.getType() != EntityType.HORSE &&
-                        e.getType() != EntityType.PIG &&
-                        e.getType() != EntityType.WOLF &&
-                        e.getUniqueId() != event.getPlayer().getUniqueId() &&
-                        Config.ENABLE_WORLDS.getStringList().contains(e.getWorld().getName())
+                        disable_list.contains(e.getType()) &&
+                        e.getUniqueId() != event.getPlayer().getUniqueId()
                 ){
                     event.setPacket(packet = packet.deepClone());
                     WrappedDataWatcher watcher = new WrappedDataWatcher(packet.getWatchableCollectionModifier().read(0));

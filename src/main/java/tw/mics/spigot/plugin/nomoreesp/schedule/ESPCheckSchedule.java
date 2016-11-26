@@ -1,13 +1,14 @@
 package tw.mics.spigot.plugin.nomoreesp.schedule;
 
+import java.util.HashSet;
 import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Villager;
 import org.bukkit.util.Vector;
 
 import tw.mics.spigot.plugin.nomoreesp.Config;
@@ -19,6 +20,7 @@ public class ESPCheckSchedule {
     Runnable runnable;
     EntityHider hider;
     int schedule_id;
+    private HashSet<EntityType> hide_list;
 
     // CONSTANT
     int TRACKING_RANGE = 64;
@@ -30,6 +32,12 @@ public class ESPCheckSchedule {
     public ESPCheckSchedule(NoMoreESP i) {
         plugin = i;
         this.hider = new EntityHider(plugin);
+        //load config
+        hide_list = new HashSet<EntityType>();
+        for(String type : Config.HIDE_ENTITY_HIDE_LIST.getStringList()){
+            hide_list.add(EntityType.valueOf(type));
+        }
+        
         setupRunnable();
     }
 
@@ -44,13 +52,13 @@ public class ESPCheckSchedule {
 
     protected void checkHide() {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
-            if (!Config.ENABLE_WORLDS.getStringList().contains(player.getWorld().getName())){
+            if (!Config.HIDE_ENTITY_ENABLE_WORLDS.getStringList().contains(player.getWorld().getName())){
                 continue;
             }
             List<Entity> nearbyEntities = player.getNearbyEntities(TRACKING_RANGE * 2,
                     player.getWorld().getMaxHeight(), TRACKING_RANGE * 2);
             nearbyEntities.forEach(target -> {
-                if(target instanceof Player || target instanceof Villager)
+                if(hide_list.contains(target.getType()))
                     checkLookable(player, target);
             });
         }
@@ -124,8 +132,6 @@ public class ESPCheckSchedule {
             }
         }, 0);
     }
-    
-
 
     public void removeRunnable() {
         this.plugin.getServer().getScheduler().cancelTask(schedule_id);

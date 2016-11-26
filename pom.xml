@@ -6,7 +6,7 @@
     <groupId>tw.mics.spigot.plugin.nomoreesp</groupId>
     <artifactId>NoMoreESP</artifactId>
     <packaging>jar</packaging>
-    <version>1.5.3</version>
+    <version>1.6.0</version>
     <name>NoMoreESP</name>
     <url>http://mics.tw</url>
     <description>anti ESP Hacking.</description>

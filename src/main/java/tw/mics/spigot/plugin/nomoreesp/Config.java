@@ -10,10 +10,14 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public enum Config {
-
-    ONLY_PLAYER("only-player", false, "ESP check is only on player?"),
-    SEND_FAKE_HEALTH("fake-health", true, "entities health is fake to player (anti health display)"),
-    ENABLE_WORLDS("enable-worlds", Arrays.asList("world","world_nether","world_the_end"), "entities on these worlds will be hide");
+    DEBUG("debug", false, "is plugin show debug message?"),
+    HIDE_ENTITY_ENABLE("hide-entity.enable", true, ""),
+    HIDE_ENTITY_ENABLE_WORLDS("hide-entity.enable-worlds", Arrays.asList("world","world_nether","world_the_end"), ""),
+    HIDE_ENTITY_HIDE_LIST("hide-entity.hide-list", Arrays.asList("PLAYER","VILLAGER"), ""),
+    
+    FAKE_HEALTH_ENABLE("fake-health.enable", true, ""),
+    FAKE_HEALTH_ENABLE_WORLDS("fake-health.enable-worlds", Arrays.asList("world","world_nether","world_the_end"), ""),
+    FAKE_HEALTH_DISABLE_LIST("fake-health.disable-list", Arrays.asList("HORSE","PIG","WOLF"), "");
 
     private final Object value;
     private final String path;
@@ -73,21 +77,30 @@ public enum Config {
 
     public static void load() {
         boolean save_flag = false;
-
-        getPlugin().getDataFolder().mkdirs();
+        
+        NoMoreESP.getInstance().getDataFolder().mkdirs();
         String header = "";
         cfg = YamlConfiguration.loadConfiguration(f);
 
         for (Config c : values()) {
-            header += c.getPath() + ": " + c.getDescription() + System.lineSeparator();
+            if(c.getDescription().toLowerCase().equals("removed")){
+                if(cfg.contains(c.getPath())){
+                    save_flag = true;
+                    cfg.set(c.getPath(), null);
+                }
+                continue;
+            }
+            if(!c.getDescription().isEmpty()){
+                header += c.getPath() + ": " + c.getDescription() + System.lineSeparator();
+            }
             if (!cfg.contains(c.getPath())) {
                 save_flag = true;
                 c.set(c.getDefaultValue(), false);
             }
         }
         cfg.options().header(header);
-
-        if (save_flag) {
+        
+        if(save_flag){
             save();
             cfg = YamlConfiguration.loadConfiguration(f);
         }
