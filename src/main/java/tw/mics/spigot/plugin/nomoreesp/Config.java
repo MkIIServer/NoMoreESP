@@ -27,7 +27,7 @@ public enum Config {
             "GOLD_ORE:5",
             "CHEST:10"
             ), ""),
-    XRAY_DETECT_RUN_COMMAND_VL("xray-detect.run_command_vl", 200, "do not less than 100, will false postive."),
+    XRAY_DETECT_RUN_COMMAND_VL("xray-detect.run_command_vl", 300, "do not less than 100, will false postive."),
     XRAY_DETECT_RUN_COMMAND("xray-detect.run_command", "ban %PLAYER% do not use x-ray", "");
 
     private final Object value;

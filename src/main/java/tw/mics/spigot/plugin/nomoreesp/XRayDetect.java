@@ -70,7 +70,6 @@ public class XRayDetect {
         
         
         //如果有值
-
         if(vl != null){        
             if(breaked_block.contains(block)) return;
             breaked_block.add(block);
