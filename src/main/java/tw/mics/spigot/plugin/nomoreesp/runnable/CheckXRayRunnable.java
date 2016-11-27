@@ -5,10 +5,13 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
+import tw.mics.spigot.plugin.nomoreesp.Config;
 import tw.mics.spigot.plugin.nomoreesp.XRayDetect;
 
 public class CheckXRayRunnable implements Runnable {
@@ -38,12 +41,27 @@ public class CheckXRayRunnable implements Runnable {
         for(int i = 0; i < 20 ; i++) {
             loc.add(vector);
             Double value = null;
+            Biome biome = null;
+            Material blocktype;
+            
             try{
-                value = XRayDetect.getBlockValue().get(loc.getBlock().getType());
+                blocktype = loc.getBlock().getType();
+                biome = loc.getBlock().getBiome();
             } catch (IllegalStateException e){
                 break; //skip when error
             }
+            value = XRayDetect.getBlockValue().get(blocktype);
             if (value != null) {
+                if(blocktype == Material.GOLD_ORE){
+                    switch(biome){
+                    case MESA:
+                    case MESA_CLEAR_ROCK:
+                    case MESA_ROCK:
+                        value /= Config.XRAY_DETECT_GOLD_VL_DIVIDED_NUMBER_IN_MESA.getDouble();
+                    default:
+                        break;
+                    }
+                }
                 LinkedHashMap<Block, Double> block_value_set = XRayDetect.getBreakAddVL(player);
                 
                 Iterator<Block> iter = blocks.iterator();

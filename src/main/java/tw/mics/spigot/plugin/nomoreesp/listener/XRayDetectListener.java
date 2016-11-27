@@ -1,10 +1,10 @@
 package tw.mics.spigot.plugin.nomoreesp.listener;
 
+import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import tw.mics.spigot.plugin.cupboard.CupboardAPI;
 import tw.mics.spigot.plugin.nomoreesp.NoMoreESP;
 import tw.mics.spigot.plugin.nomoreesp.XRayDetect;
 
@@ -21,14 +21,7 @@ public class XRayDetectListener extends MyListener {
 
     @EventHandler
     public void onPlayerBreak(BlockBreakEvent event){
-        boolean limit;
-        try {
-            Class.forName("tw.mics.spigot.plugin.cupboard.CupboardAPI");
-            limit  = CupboardAPI.checkIsLimit(event.getBlock());
-        } catch (ClassNotFoundException e) {
-            limit = false;
-        }
-        if(!limit){
+        if(event.getBlock().getType() == Material.STONE){
             XRayDetect.playerBreakBlock(event.getPlayer(), event.getBlock());
         }
     }

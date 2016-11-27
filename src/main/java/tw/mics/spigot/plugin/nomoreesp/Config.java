@@ -22,12 +22,17 @@ public enum Config {
     
     XRAY_DETECT_ENABLE("xray-detect.enable", true, ""),
     XRAY_DETECT_ADD_VL_BLOCK_AND_NUMBER("xray-detect.vl-list", Arrays.asList(
-            "DIAMOND_ORE:5",
-            "IRON_ORE:0.5",
-            "GOLD_ORE:5",
-            "CHEST:10"
+            "IRON_ORE:2",
+            "GOLD_ORE:6",
+            "DIAMOND_ORE:8",
+            "EMERALD_ORE:10",
+            "GOLD_BLOCK:10",
+            "CHEST:10",
+            "TRAPPED_CHEST:10"
             ), ""),
-    XRAY_DETECT_RUN_COMMAND_VL("xray-detect.run_command_vl", 300, "do not less than 100, will false postive."),
+    XRAY_DETECT_GOLD_VL_DIVIDED_NUMBER_IN_MESA("xray-detect.gold-vl-divided-number-in-mesa", 3, 
+            "gold is much more in mesa"),
+    XRAY_DETECT_RUN_COMMAND_VL("xray-detect.run_command_vl", 300, "do not less than 200, will false postive."),
     XRAY_DETECT_RUN_COMMAND("xray-detect.run_command", "ban %PLAYER% do not use x-ray", "");
 
     private final Object value;
