@@ -49,12 +49,12 @@ public class CheckSchedule {
                 Iterator<? extends Player> iter_online_player = plugin.getServer().getOnlinePlayers().iterator();
                 while (iter_online_player.hasNext()) {
                     Player player = iter_online_player.next();
-                    if (!Config.HIDE_ENTITY_ENABLE_WORLDS.getStringList().contains(player.getWorld().getName())){
-                        continue;
-                    }
                     
                     //hideentity
-                    if(Config.HIDE_ENTITY_ENABLE.getBoolean()){
+                    if(
+                            Config.HIDE_ENTITY_ENABLE.getBoolean() && 
+                            Config.HIDE_ENTITY_ENABLE_WORLDS.getStringList().contains(player.getWorld().getName())
+                    ){
                         List<Entity> nearbyEntities = player.getNearbyEntities(Config.HIDE_ENTITY_HIDE_RANGE.getInt() * 2,
                         player.getWorld().getMaxHeight(), Config.HIDE_ENTITY_HIDE_RANGE.getInt() * 2);
                         nearbyEntities.remove(player);
@@ -65,8 +65,12 @@ public class CheckSchedule {
                     }
                     
                     //xray
-                    if(Config.XRAY_DETECT_ENABLE.getBoolean())
+                    if(
+                            Config.XRAY_DETECT_ENABLE.getBoolean() && 
+                            Config.XRAY_DETECT_ENABLE_WORLDS.getStringList().contains(player.getWorld().getName())
+                    ){
                         new Thread(new CheckXRayRunnable(player)).start();
+                    }
                 }
             }
         }).start();

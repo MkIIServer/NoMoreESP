@@ -21,18 +21,19 @@ public enum Config {
     FAKE_HEALTH_DISABLE_LIST("fake-health.disable-list", Arrays.asList("HORSE","PIG","WOLF"), ""),
     
     XRAY_DETECT_ENABLE("xray-detect.enable", true, ""),
+    XRAY_DETECT_ENABLE_WORLDS("xray-detect.enable-worlds", Arrays.asList("world"), ""),
     XRAY_DETECT_ADD_VL_BLOCK_AND_NUMBER("xray-detect.vl-list", Arrays.asList(
             "IRON_ORE:2",
             "GOLD_ORE:6",
-            "DIAMOND_ORE:8",
-            "EMERALD_ORE:10",
-            "GOLD_BLOCK:10",
-            "CHEST:10",
-            "TRAPPED_CHEST:10"
-            ), ""),
+            "DIAMOND_ORE:7",
+            "EMERALD_ORE:8",
+            "GOLD_BLOCK:8",
+            "CHEST:8",
+            "TRAPPED_CHEST:8"
+            ), "You can remove gold ore and gold block if your server gold is NOT high value."),
     XRAY_DETECT_GOLD_VL_DIVIDED_NUMBER_IN_MESA("xray-detect.gold-vl-divided-number-in-mesa", 3, 
             "gold is much more in mesa"),
-    XRAY_DETECT_RUN_COMMAND_VL("xray-detect.run_command_vl", 300, "do not less than 200, will false postive."),
+    XRAY_DETECT_RUN_COMMAND_VL("xray-detect.run_command_vl", 400, "do not less than 300, will false postive."),
     XRAY_DETECT_RUN_COMMAND("xray-detect.run_command", "ban %PLAYER% do not use x-ray", "");
 
     private final Object value;
