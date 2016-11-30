@@ -23,13 +23,13 @@ public enum Config {
     XRAY_DETECT_ENABLE("xray-detect.enable", true, ""),
     XRAY_DETECT_ENABLE_WORLDS("xray-detect.enable-worlds", Arrays.asList("world"), ""),
     XRAY_DETECT_ADD_VL_BLOCK_AND_NUMBER("xray-detect.vl-list", Arrays.asList(
-            "IRON_ORE:2",
-            "GOLD_ORE:6",
-            "DIAMOND_ORE:7",
-            "EMERALD_ORE:8",
-            "GOLD_BLOCK:8",
-            "CHEST:8",
-            "TRAPPED_CHEST:8"
+            "IRON_ORE:1",
+            "GOLD_ORE:3",
+            "DIAMOND_ORE:5",
+            "EMERALD_ORE:5",
+            "GOLD_BLOCK:5",
+            "CHEST:6",
+            "TRAPPED_CHEST:6"
             ), "You can remove gold ore and gold block if your server gold is NOT high value."),
     XRAY_DETECT_GOLD_VL_DIVIDED_NUMBER_IN_MESA("xray-detect.gold-vl-divided-number-in-mesa", 3, 
             "gold is much more in mesa"),
