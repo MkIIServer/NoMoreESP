@@ -4,23 +4,23 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
 
 import tw.mics.spigot.plugin.cupboard.CupboardAPI;
 
 public class XRayDetect {
-    static HashMap<Player, LinkedHashMap<Block,Double>> player_break_block_add_vl;
-    static HashMap<Player, HashSet<Block>> player_breaked_block;
-    static HashMap<Player, Double> player_vl;
+    static HashMap<UUID, LinkedHashMap<Block,Double>> player_break_block_add_vl;
+    static HashMap<UUID, HashSet<Block>> player_breaked_block;
+    static HashMap<UUID, Double> player_vl;
     static HashMap<Material, Double> config_block_value;
     public static void initData(){
-        player_break_block_add_vl = new HashMap<Player, LinkedHashMap<Block,Double>>();
-        player_breaked_block = new HashMap<Player, HashSet<Block>>();
-        player_vl = new HashMap<Player, Double>();
+        player_break_block_add_vl = new HashMap<UUID, LinkedHashMap<Block,Double>>();
+        player_breaked_block = new HashMap<UUID, HashSet<Block>>();
+        player_vl = new HashMap<UUID, Double>();
         config_block_value = new HashMap<Material, Double>();
         
         for(String str : Config.XRAY_DETECT_ADD_VL_BLOCK_AND_NUMBER.getStringList()){
@@ -31,7 +31,7 @@ public class XRayDetect {
         }
     }
 
-    public static void checkPlayerDataExist(Player player){
+    public static void checkUUIDDataExist(UUID player){
         int maxEntries = 1000;
         if(!player_break_block_add_vl.containsKey(player)){
             player_break_block_add_vl.put(player,new LinkedHashMap<Block,Double>(maxEntries*10/7, 0.7f, true){
@@ -50,14 +50,14 @@ public class XRayDetect {
         }
     }
     
-    public static void removePlayer(Player player){
+    public static void removeUUID(UUID player){
         player_break_block_add_vl.remove(player);
         player_breaked_block.remove(player);
         player_vl.remove(player);
     }
     
-    public static LinkedHashMap<Block, Double> getBreakAddVL(Player player){
-        checkPlayerDataExist(player);
+    public static LinkedHashMap<Block, Double> getBreakAddVL(UUID player){
+        checkUUIDDataExist(player);
         return player_break_block_add_vl.get(player);
     }
     
@@ -65,12 +65,12 @@ public class XRayDetect {
         return config_block_value;
     }
 
-    public static void playerBreakBlock(Player player, Block block) {
+    public static void playerBreakBlock(UUID player, Block block) {
         
         new Thread(new Runnable(){
             @Override
             public void run() {
-                checkPlayerDataExist(player);
+                checkUUIDDataExist(player);
                 Double vl = player_break_block_add_vl.get(player).get(block);
                 HashSet<Block> breaked_block = player_breaked_block.get(player);
                 
@@ -92,11 +92,11 @@ public class XRayDetect {
                     //reach vl and run command
                     if(player_vl.get(player) > Config.XRAY_DETECT_RUN_COMMAND_VL.getInt()){
                         //log
-                        NoMoreESP.getInstance().logInToFile("Player " + player.getName() +
+                        NoMoreESP.getInstance().logInToFile("UUID " + Bukkit.getPlayer(player).getName() +
                                 " is reach command vl (now vl is " + player_vl.get(player) + ")" );
                         
                         //run command
-                        String str = Config.XRAY_DETECT_RUN_COMMAND.getString().replace("%PLAYER%", player.getName());
+                        String str = Config.XRAY_DETECT_RUN_COMMAND.getString().replace("%PLAYER%", Bukkit.getPlayer(player).getName());
                         if(!str.isEmpty()){
                             Bukkit.getScheduler().scheduleSyncDelayedTask(NoMoreESP.getInstance(), new Runnable(){
                                 @Override
@@ -117,7 +117,7 @@ public class XRayDetect {
                 
                 //debug message
                 if(Config.DEBUG.getBoolean()){
-                    NoMoreESP.getInstance().logDebugInToFile(player.getName() + "'s VL is now " + player_vl.get(player));
+                    NoMoreESP.getInstance().logDebugInToFile(Bukkit.getPlayer(player).getName() + "'s VL is now " + player_vl.get(player));
                 }
             }
         }).start();

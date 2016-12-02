@@ -62,7 +62,7 @@ public class CheckXRayRunnable implements Runnable {
                         break;
                     }
                 }
-                LinkedHashMap<Block, Double> block_value_set = XRayDetect.getBreakAddVL(player);
+                LinkedHashMap<Block, Double> block_value_set = XRayDetect.getBreakAddVL(player.getUniqueId());
                 
                 Iterator<Block> iter = blocks.iterator();
                 while(iter.hasNext()){

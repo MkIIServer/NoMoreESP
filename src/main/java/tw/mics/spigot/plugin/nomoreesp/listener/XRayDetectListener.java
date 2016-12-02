@@ -16,7 +16,7 @@ public class XRayDetectListener extends MyListener {
     @EventHandler
     public void onPlayerBreak(BlockBreakEvent event){
         if(event.getBlock().getType() == Material.STONE){
-            XRayDetect.playerBreakBlock(event.getPlayer(), event.getBlock());
+            XRayDetect.playerBreakBlock(event.getPlayer().getUniqueId(), event.getBlock());
         }
     }
 }
