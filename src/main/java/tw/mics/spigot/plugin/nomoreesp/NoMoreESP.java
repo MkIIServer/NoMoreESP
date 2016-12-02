@@ -61,6 +61,31 @@ public class NoMoreESP extends JavaPlugin {
         }
     }
     
+    public void logDebugInToFile(String msg){
+        new Thread(() -> {
+            try
+            {
+                File dataFolder = this.getDataFolder();
+                if(!dataFolder.exists()){
+                    dataFolder.mkdir();
+                }
+                File saveTo = new File(dataFolder, "debug.log");
+                if (!saveTo.exists()){
+                    saveTo.createNewFile();
+                }
+                FileWriter fw = new FileWriter(saveTo, true);
+                PrintWriter pw = new PrintWriter(fw);
+                DateFormat dateFormat = new SimpleDateFormat("[yyyy/MM/dd HH:mm:ss] ");
+                Calendar cal = Calendar.getInstance();
+                pw.println(dateFormat.format(cal.getTime()) + msg);
+                pw.flush();
+                pw.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+    
     public void logInToFile(String msg){
         new Thread(() -> {
             try

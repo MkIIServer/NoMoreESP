@@ -117,7 +117,7 @@ public class XRayDetect {
                 
                 //debug message
                 if(Config.DEBUG.getBoolean()){
-                    NoMoreESP.getInstance().log(player.getName() + "'s VL is now " + player_vl.get(player));
+                    NoMoreESP.getInstance().logDebugInToFile(player.getName() + "'s VL is now " + player_vl.get(player));
                 }
             }
         }).start();
