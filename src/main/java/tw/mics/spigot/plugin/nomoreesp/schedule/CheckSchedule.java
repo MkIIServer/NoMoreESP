@@ -49,6 +49,8 @@ public class CheckSchedule {
                 Iterator<? extends Player> iter_online_player = plugin.getServer().getOnlinePlayers().iterator();
                 while (iter_online_player.hasNext()) {
                     Player player = iter_online_player.next();
+                    if(!player.isOnline() || !player.isValid())
+                        continue;
                     
                     //hideentity
                     if(
@@ -78,8 +80,6 @@ public class CheckSchedule {
 
     private void checkLookable(Player player, Entity target) {
         new Thread(new CheckHideEntityRunnable(hider, player, target)).start();
-        
-
     }
 
     public void removeRunnable() {
