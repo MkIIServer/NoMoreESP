@@ -16,13 +16,14 @@ import tw.mics.spigot.plugin.nomoreesp.schedule.CheckSchedule;
 
 public class NoMoreESP extends JavaPlugin {
     private static NoMoreESP INSTANCE;
+    private CheckSchedule checkschedule;
 
     @Override
     public void onEnable() {
         INSTANCE = this;
         Config.load();
         if(Config.HIDE_ENTITY_ENABLE.getBoolean() || Config.XRAY_DETECT_ENABLE.getBoolean()){
-            new CheckSchedule(this);
+            checkschedule = new CheckSchedule(this);
         }
         
         if(Config.XRAY_DETECT_ENABLE.getBoolean()){
@@ -41,6 +42,7 @@ public class NoMoreESP extends JavaPlugin {
         HandlerList.unregisterAll();
         this.logDebug("Unregister Schedule tasks!");
         this.getServer().getScheduler().cancelAllTasks();
+        checkschedule.removeRunnable();
     }
 
     public static NoMoreESP getInstance() {

@@ -66,7 +66,6 @@ public class XRayDetect {
     }
 
     public static void playerBreakBlock(UUID player, Block block) {
-        
         new Thread(new Runnable(){
             @Override
             public void run() {

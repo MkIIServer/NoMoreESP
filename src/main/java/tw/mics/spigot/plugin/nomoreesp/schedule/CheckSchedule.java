@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -18,12 +19,14 @@ public class CheckSchedule {
     NoMoreESP plugin;
     Runnable runnable;
     public EntityHider hider;
-    int schedule_id;
+    boolean keep_check;
     private HashSet<EntityType> hide_list;
 
     public CheckSchedule(NoMoreESP i) {
         plugin = i;
-        this.hider = new EntityHider(plugin);
+        keep_check = true;
+        hider = new EntityHider(plugin);
+        
         //load config
         hide_list = new HashSet<EntityType>();
         for(String type : Config.HIDE_ENTITY_HIDE_LIST.getStringList()){
@@ -34,55 +37,61 @@ public class CheckSchedule {
     }
 
     private void setupRunnable() {
-        runnable = new Runnable() {
-            public void run() {
-                check();
-            }
-        };
-        schedule_id = this.plugin.getServer().getScheduler().scheduleSyncRepeatingTask(this.plugin, runnable, 0, 2);
+        check();
     }
 
     protected void check() {
-        new Thread(new Runnable(){
-            @Override
-            public void run() {
-                Iterator<? extends Player> iter_online_player = plugin.getServer().getOnlinePlayers().iterator();
-                while (iter_online_player.hasNext()) {
-                    Player player = iter_online_player.next();
-                    if(!player.isOnline() || !player.isValid())
-                        continue;
-                    
-                    //hideentity
-                    if(
-                            Config.HIDE_ENTITY_ENABLE.getBoolean() && 
-                            Config.HIDE_ENTITY_ENABLE_WORLDS.getStringList().contains(player.getWorld().getName())
-                    ){
-                        List<Entity> nearbyEntities = player.getNearbyEntities(Config.HIDE_ENTITY_HIDE_RANGE.getInt() * 2,
-                        player.getWorld().getMaxHeight(), Config.HIDE_ENTITY_HIDE_RANGE.getInt() * 2);
-                        nearbyEntities.remove(player);
-                        nearbyEntities.forEach(target -> {
-                        if(hide_list.contains(target.getType()))
-                            checkLookable(player, target);
-                        });
-                    }
-                    
-                    //xray
-                    if(
-                            Config.XRAY_DETECT_ENABLE.getBoolean() && 
-                            Config.XRAY_DETECT_ENABLE_WORLDS.getStringList().contains(player.getWorld().getName())
-                    ){
-                        new Thread(new CheckXRayRunnable(player)).start();
+        Bukkit.getScheduler().runTaskAsynchronously(NoMoreESP.getInstance(), 
+            new Runnable(){
+                @Override
+                public void run() {
+                    try{
+                        while(keep_check){
+                            Iterator<? extends Player> iter_online_player = plugin.getServer().getOnlinePlayers().iterator();
+                            while (iter_online_player.hasNext()) {
+                                Player player = iter_online_player.next();
+                                if(!player.isOnline() || !player.isValid())
+                                    continue;
+                                //hideentity
+                                if(
+                                        Config.HIDE_ENTITY_ENABLE.getBoolean() && 
+                                        Config.HIDE_ENTITY_ENABLE_WORLDS.getStringList().contains(player.getWorld().getName())
+                                ){
+                                    //this shouldn't async
+                                    List<Entity> nearbyEntities = player.getNearbyEntities(Config.HIDE_ENTITY_HIDE_RANGE.getInt() * 2,
+                                            player.getWorld().getMaxHeight(), Config.HIDE_ENTITY_HIDE_RANGE.getInt() * 2);
+                                    
+                                    nearbyEntities.remove(player);
+                                    nearbyEntities.forEach(target -> {
+                                    if(hide_list.contains(target.getType()))
+                                        Bukkit.getScheduler().runTaskAsynchronously(NoMoreESP.getInstance(), 
+                                                new CheckHideEntityRunnable(hider, player, target));
+                                    });
+                                }
+                                
+                                //xray
+                                if(
+                                        Config.XRAY_DETECT_ENABLE.getBoolean() && 
+                                        Config.XRAY_DETECT_ENABLE_WORLDS.getStringList().contains(player.getWorld().getName())
+                                ){
+                                    Bukkit.getScheduler().runTaskAsynchronously(NoMoreESP.getInstance(), 
+                                            new CheckXRayRunnable(player));
+                                }
+                            }
+                            Thread.sleep(200);
+                        }
+                    } catch(Exception e) {
+                        e.printStackTrace();
+                    } finally {
+                        try { Thread.sleep(200); } catch (InterruptedException e) {}
+                        if(keep_check) check();
                     }
                 }
             }
-        }).start();
-    }
-
-    private void checkLookable(Player player, Entity target) {
-        new Thread(new CheckHideEntityRunnable(hider, player, target)).start();
+        );
     }
 
     public void removeRunnable() {
-        this.plugin.getServer().getScheduler().cancelTask(schedule_id);
+        keep_check = false;
     }
 }
