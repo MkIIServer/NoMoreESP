@@ -82,8 +82,7 @@ public class CheckSchedule {
                         }
                     } catch(Exception e) {
                         e.printStackTrace();
-                    } finally {
-                        try { Thread.sleep(200); } catch (InterruptedException e) {}
+                        try { Thread.sleep(200); } catch (InterruptedException ee) {}
                         if(keep_check) check();
                     }
                 }
