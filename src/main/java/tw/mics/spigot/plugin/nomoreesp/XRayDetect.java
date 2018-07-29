@@ -10,8 +10,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 
-import tw.mics.spigot.plugin.cupboard.CupboardAPI;
-
 public class XRayDetect {
     static HashMap<UUID, LinkedHashMap<Block,Double>> player_break_block_add_vl;
     static HashMap<UUID, HashSet<Block>> player_breaked_block;
