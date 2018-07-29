@@ -22,14 +22,11 @@ public enum Config {
             "IRON_ORE:1",
             "GOLD_ORE:3",
             "DIAMOND_ORE:5",
-            "EMERALD_ORE:5",
-            "GOLD_BLOCK:5",
-            "CHEST:6",
-            "TRAPPED_CHEST:6"
-            ), "You can remove gold ore and gold block if your server gold is NOT high value."),
+            "EMERALD_ORE:5"
+            ), ""),
     XRAY_DETECT_GOLD_VL_DIVIDED_NUMBER_IN_MESA("xray-detect.gold-vl-divided-number-in-mesa", 3, 
             "gold is much more in mesa"),
-    XRAY_DETECT_RUN_COMMAND_VL("xray-detect.run_command_vl", 400, "do not less than 300, will false postive."),
+    XRAY_DETECT_RUN_COMMAND_VL("xray-detect.run_command_vl", 500, "do not less than 300, will false postive."),
     XRAY_DETECT_RUN_COMMAND("xray-detect.run_command", "ban %PLAYER% do not use x-ray", "");
 
     private final Object value;

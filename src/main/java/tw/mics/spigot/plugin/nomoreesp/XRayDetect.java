@@ -74,7 +74,7 @@ public class XRayDetect {
                 HashSet<Block> breaked_block = player_breaked_block.get(player);
                 
                 //如果有值
-                if(vl != null){        
+                if(vl != null){
                     if(breaked_block.contains(block)) return;
                     breaked_block.add(block);
                     boolean limit;

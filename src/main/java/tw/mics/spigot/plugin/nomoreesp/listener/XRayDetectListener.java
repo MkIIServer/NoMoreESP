@@ -1,6 +1,5 @@
 package tw.mics.spigot.plugin.nomoreesp.listener;
 
-import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockBreakEvent;
 
@@ -15,8 +14,6 @@ public class XRayDetectListener extends MyListener {
 
     @EventHandler
     public void onPlayerBreak(BlockBreakEvent event){
-        if(event.getBlock().getType() == Material.STONE){
-            XRayDetect.playerBreakBlock(event.getPlayer().getUniqueId(), event.getBlock());
-        }
+        XRayDetect.playerBreakBlock(event.getPlayer().getUniqueId(), event.getBlock());
     }
 }
