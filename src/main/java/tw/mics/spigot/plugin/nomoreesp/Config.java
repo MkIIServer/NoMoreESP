@@ -17,21 +17,7 @@ public enum Config {
     HIDE_ENTITY_ENABLE("hide-entity.enable", true, ""),
     HIDE_ENTITY_ENABLE_WORLDS("hide-entity.enable-worlds", Arrays.asList("world","world_nether","world_the_end"), ""),
     HIDE_ENTITY_HIDE_LIST("hide-entity.hide-list", Arrays.asList("PLAYER","VILLAGER"), ""),
-    HIDE_ENTITY_HIDE_RANGE("hide-entity.hide-range", 48, ""),
-    
-    XRAY_DETECT_ENABLE("xray-detect.enable", true, ""),
-    XRAY_DETECT_ENABLE_WORLDS("xray-detect.enable-worlds", Arrays.asList("world"), ""),
-    XRAY_DETECT_ADD_VL_BLOCK_AND_NUMBER("xray-detect.vl-list", Arrays.asList(
-            "IRON_ORE:1",
-            "GOLD_ORE:3",
-            "DIAMOND_ORE:5",
-            "EMERALD_ORE:5"
-            ), ""),
-    XRAY_MINUX_VL("xray-detect.vl-minus", 0.1, ""),
-    XRAY_DETECT_GOLD_VL_DIVIDED_NUMBER_IN_MESA("xray-detect.gold-vl-divided-number-in-mesa", 3, 
-            "gold is much more in mesa"),
-    XRAY_DETECT_RUN_COMMAND_VL("xray-detect.run_command_vl", 500, "do not less than 300, will false postive."),
-    XRAY_DETECT_RUN_COMMAND("xray-detect.run_command", "ban %PLAYER% do not use x-ray", "");
+    HIDE_ENTITY_HIDE_RANGE("hide-entity.hide-range", 48, "");
 
     private final Object value;
     private final String path;
