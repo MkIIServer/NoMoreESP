@@ -49,17 +49,25 @@ public class NoMoreESP extends JavaPlugin {
 
     public void log(String str, Object... args) {
         String message = String.format(str, args);
-        getLogger().info(message);
+        if(Config.LOG_IN_FILE.getBoolean()){
+            logInToFile(message);
+        }
+        if (Config.LOG_IN_CONSOLE.getBoolean()) {
+            getLogger().info(message);
+        }
     }
 
     public void logDebug(String str, Object... args) {
-        if (Config.DEBUG.getBoolean()) {
-            String message = String.format(str, args);
+        String message = String.format(str, args);
+        if(Config.DEBUG_IN_FILE.getBoolean()){
+            logDebugInToFile(message);
+        }
+        if (Config.DEBUG_IN_CONSOLE.getBoolean()) {
             getLogger().info("(DEBUG) " + message);
         }
     }
     
-    public void logDebugInToFile(String msg){
+    private void logDebugInToFile(String msg){
         new Thread(() -> {
             try
             {
@@ -84,7 +92,7 @@ public class NoMoreESP extends JavaPlugin {
         }).start();
     }
     
-    public void logInToFile(String msg){
+    private void logInToFile(String msg){
         new Thread(() -> {
             try
             {

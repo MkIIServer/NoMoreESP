@@ -32,7 +32,7 @@ public class XRayDetect {
     }
 
     public static void checkUUIDDataExist(UUID player){
-        int maxEntries = 1000;
+        int maxEntries = 100;
         if(!player_break_block_add_vl.containsKey(player)){
             player_break_block_add_vl.put(player,new LinkedHashMap<Block,Double>(maxEntries*10/7, 0.7f, true){
                 private static final long serialVersionUID = 7122398289557675273L;
@@ -72,27 +72,24 @@ public class XRayDetect {
                 checkUUIDDataExist(player);
                 Double vl = player_break_block_add_vl.get(player).get(block);
                 HashSet<Block> breaked_block = player_breaked_block.get(player);
-                
+                String block_location_string = block.getX() + ", " + block.getY() + ", " + block.getZ();
                 //如果有值
                 if(vl != null){
-                    if(breaked_block.contains(block)) return;
-                    breaked_block.add(block);
-                    boolean limit;
-                    try {
-                        Class.forName("tw.mics.spigot.plugin.cupboard.CupboardAPI");
-                        limit  = CupboardAPI.checkIsLimit(block);
-                    } catch (ClassNotFoundException e) {
-                        limit = false;
+                    if(breaked_block.contains(block)) {
+                        NoMoreESP.getInstance().logDebug( "%s mining block(%s) mined before, skip add VL.", Bukkit.getPlayer(player).getName(), block_location_string);
+                        return;
                     }
-                    if(limit)return;
+                    breaked_block.add(block);
                     
+                    
+                    NoMoreESP.getInstance().logDebug( "%s mining targeted block(%s), VL add %.3f", Bukkit.getPlayer(player).getName(), block_location_string, vl);
                     player_vl.put(player, player_vl.get(player) + vl);
                     
                     //reach vl and run command
                     if(player_vl.get(player) > Config.XRAY_DETECT_RUN_COMMAND_VL.getInt()){
                         //log
-                        NoMoreESP.getInstance().logInToFile("UUID " + Bukkit.getPlayer(player).getName() +
-                                " is reach command vl (now vl is " + player_vl.get(player) + ")" );
+                        String msg = "%s is reach command vl (now vl is %.3f)";
+                        NoMoreESP.getInstance().log(msg, Bukkit.getPlayer(player).getName(), player_vl.get(player));
                         
                         //run command
                         String str = Config.XRAY_DETECT_RUN_COMMAND.getString().replace("%PLAYER%", Bukkit.getPlayer(player).getName());
@@ -109,15 +106,14 @@ public class XRayDetect {
                         player_vl.put(player, 0.0);
                     }
                 } else if(player_vl.get(player) > 0) {
-                    player_vl.put(player, player_vl.get(player) - 1);
+                    NoMoreESP.getInstance().logDebug("%s is mining non-targeted block(%s), VL minus %.3f", Bukkit.getPlayer(player).getName(), block_location_string, Config.XRAY_MINUX_VL.getDouble());
+                    player_vl.put(player, player_vl.get(player) - Config.XRAY_MINUX_VL.getDouble());
                 } else {
                     return;
                 }
                 
                 //debug message
-                if(Config.DEBUG.getBoolean()){
-                    NoMoreESP.getInstance().logDebugInToFile(Bukkit.getPlayer(player).getName() + "'s VL is now " + player_vl.get(player));
-                }
+                NoMoreESP.getInstance().logDebug( "%s's VL is now %.3f",Bukkit.getPlayer(player).getName(), player_vl.get(player));
             }
         }).start();
     }

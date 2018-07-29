@@ -10,7 +10,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public enum Config {
-    DEBUG("debug", false, "is plugin show debug message?"),
+    DEBUG_IN_CONSOLE("debug-in-console", false, ""),
+    DEBUG_IN_FILE("debug-in-file", true, ""),
+    LOG_IN_CONSOLE("log-in-console", false, ""),
+    LOG_IN_FILE("log-in-file", true, ""),
     HIDE_ENTITY_ENABLE("hide-entity.enable", true, ""),
     HIDE_ENTITY_ENABLE_WORLDS("hide-entity.enable-worlds", Arrays.asList("world","world_nether","world_the_end"), ""),
     HIDE_ENTITY_HIDE_LIST("hide-entity.hide-list", Arrays.asList("PLAYER","VILLAGER"), ""),
@@ -24,6 +27,7 @@ public enum Config {
             "DIAMOND_ORE:5",
             "EMERALD_ORE:5"
             ), ""),
+    XRAY_MINUX_VL("xray-detect.vl-minus", 0.1, ""),
     XRAY_DETECT_GOLD_VL_DIVIDED_NUMBER_IN_MESA("xray-detect.gold-vl-divided-number-in-mesa", 3, 
             "gold is much more in mesa"),
     XRAY_DETECT_RUN_COMMAND_VL("xray-detect.run_command_vl", 500, "do not less than 300, will false postive."),
