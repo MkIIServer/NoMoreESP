@@ -30,10 +30,6 @@ public class NoMoreESP extends JavaPlugin {
             new XRayDetectListener(this); 
             XRayDetect.initData();
         }
-        
-        if(Config.FAKE_HEALTH_ENABLE.getBoolean()){
-            new HealthHider(this);
-        }
     }
     
     @Override
@@ -41,7 +37,7 @@ public class NoMoreESP extends JavaPlugin {
         this.logDebug("Unregister Listener!");
         HandlerList.unregisterAll();
         this.logDebug("Unregister Schedule tasks!");
-        this.getServer().getScheduler().cancelAllTasks();
+        this.getServer().getScheduler().cancelTasks(this);
         checkschedule.removeRunnable();
     }
 

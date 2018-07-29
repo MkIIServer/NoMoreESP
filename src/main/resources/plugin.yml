@@ -4,5 +4,6 @@ version: ${project.version}
 description: ${project.description}
 author: Mics
 website: https://mics.tw
+api-version: 1.13
 
 depend: [ProtocolLib]

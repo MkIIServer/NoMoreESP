@@ -15,11 +15,6 @@ public enum Config {
     HIDE_ENTITY_ENABLE_WORLDS("hide-entity.enable-worlds", Arrays.asList("world","world_nether","world_the_end"), ""),
     HIDE_ENTITY_HIDE_LIST("hide-entity.hide-list", Arrays.asList("PLAYER","VILLAGER"), ""),
     HIDE_ENTITY_HIDE_RANGE("hide-entity.hide-range", 48, ""),
-
-    FAKE_HEALTH_ENABLE("fake-health.enable", true, ""),
-    FAKE_HEALTH_ENABLE_WORLDS("fake-health.enable-worlds", Arrays.asList("world","world_nether","world_the_end"), ""),
-    FAKE_HEALTH_DISABLE_LIST("fake-health.disable-list", Arrays.asList("HORSE", "ZOMBIE_HORSE", 
-            "SKELETON_HORSE", "DONKEY", "LLAMA", "MULE", "PIG", "WOLF"), ""),
     
     XRAY_DETECT_ENABLE("xray-detect.enable", true, ""),
     XRAY_DETECT_ENABLE_WORLDS("xray-detect.enable-worlds", Arrays.asList("world"), ""),

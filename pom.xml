@@ -17,7 +17,7 @@
         <project.mainclass>tw.mics.spigot.plugin.nomoreesp.NoMoreESP</project.mainclass>
         <!--Use a profile to overwrite this-->
         <outputdir>${project.build.outputDirectory}</outputdir>
-        <mc-version>1.10</mc-version>
+        <mc-version>1.13</mc-version>
         <bukkit-ver>R0.1-SNAPSHOT</bukkit-ver>
         <testDir>${basedir}/src/test/</testDir>
         <srcDir>${basedir}/src/main/java/</srcDir>
@@ -70,7 +70,7 @@
 		<!-- ProtocolLib-API -->
 		<repository>
 		  <id>dmulloy2-repo</id>
-		  <url>http://repo.dmulloy2.net/content/groups/public/</url>
+		  <url>http://repo.dmulloy2.net/nexus/repository/public/</url>
 		</repository>
     </repositories>
 
@@ -85,10 +85,10 @@
         
 		<!-- ProtocolLib-API -->
         <dependency>
-		  <groupId>com.comphenix.protocol</groupId>
-		  <artifactId>ProtocolLib-API</artifactId>
-		  <version>4.0</version>
-		</dependency>
+            <groupId>com.comphenix.protocol</groupId>
+            <artifactId>ProtocolLib-API</artifactId>
+            <version>4.3.0</version>
+        </dependency>
 		
         <dependency>
             <groupId>tw.mics.spigot.plugin.cupboard</groupId>

@@ -54,9 +54,12 @@ public class CheckXRayRunnable implements Runnable {
             if (value != null) {
                 if(blocktype == Material.GOLD_ORE){
                     switch(biome){
-                    case MESA:
-                    case MESA_CLEAR_ROCK:
-                    case MESA_ROCK:
+                    case BADLANDS:
+                    case ERODED_BADLANDS:
+                    case WOODED_BADLANDS_PLATEAU:
+                    case MODIFIED_BADLANDS_PLATEAU:
+                    case MODIFIED_WOODED_BADLANDS_PLATEAU:
+                    case BADLANDS_PLATEAU:
                         value /= Config.XRAY_DETECT_GOLD_VL_DIVIDED_NUMBER_IN_MESA.getDouble();
                     default:
                         break;
