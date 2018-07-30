@@ -11,7 +11,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import tw.mics.spigot.plugin.nomoreesp.Config;
+import tw.mics.spigot.plugin.nomoreesp.NoMoreESP;
 import tw.mics.spigot.plugin.nomoreesp.XRayDetect;
 
 public class CheckXRayRunnable implements Runnable {
@@ -40,38 +40,33 @@ public class CheckXRayRunnable implements Runnable {
         }
         for(int i = 0; i < 20 ; i++) {
             loc.add(vector);
+            Block value_block = null;
             Double value = null;
-            Biome biome = null;
+            String block_location_string = null;
             Material blocktype;
             
             try{
-                blocktype = loc.getBlock().getType();
-                biome = loc.getBlock().getBiome();
+                value_block = loc.getBlock();
+                blocktype = value_block.getType();
+                block_location_string = value_block.getX() + ", " + value_block.getY() + ", " + value_block.getZ();
             } catch (IllegalStateException e){
                 break; //skip when error
             }
-            value = XRayDetect.getBlockValue().get(blocktype);
-            if (value != null) {
-                if(blocktype == Material.GOLD_ORE){
-                    switch(biome){
-                    case BADLANDS:
-                    case ERODED_BADLANDS:
-                    case WOODED_BADLANDS_PLATEAU:
-                    case MODIFIED_BADLANDS_PLATEAU:
-                    case MODIFIED_WOODED_BADLANDS_PLATEAU:
-                    case BADLANDS_PLATEAU:
-                        value /= Config.XRAY_DETECT_GOLD_VL_DIVIDED_NUMBER_IN_MESA.getDouble();
-                    default:
-                        break;
-                    }
-                }
-                LinkedHashMap<Block, Double> block_value_set = XRayDetect.getBreakAddVL(player.getUniqueId());
+            value = XRayDetect.getBlockValue(blocktype);
+            if (value != null) { //如果指到有價值的方塊
+                LinkedHashMap<Block, HashSet<Block>> value_block_count_block_set = XRayDetect.getValueBlockCountBlockSet(player.getUniqueId());
                 
+                HashSet<Block> count_block_set = value_block_count_block_set.get(value_block);
+                if(count_block_set == null){
+                    count_block_set = new HashSet<Block>();
+                }
+
                 Iterator<Block> iter = blocks.iterator();
                 while(iter.hasNext()){
-                    Block block = iter.next();
-                    block_value_set.put(block, value);
+                    Block count_block = iter.next();
+                    count_block_set.add(count_block);
                 }
+                NoMoreESP.getInstance().logDebug( "%s look at value block(%s) now have %d count blocks.", player.getName(), block_location_string, count_block_set.size());
                 break;
             }
             blocks.add(loc.getBlock());

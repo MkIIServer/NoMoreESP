@@ -6,7 +6,7 @@
     <groupId>tw.mics.spigot.plugin.nomoreesp</groupId>
     <artifactId>NoMoreESP</artifactId>
     <packaging>jar</packaging>
-    <version>3.0.0</version>
+    <version>3.1.0</version>
     <name>NoMoreESP</name>
     <url>http://mics.tw</url>
     <description>anti ESP Hacking.</description>
@@ -88,14 +88,6 @@
             <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib-API</artifactId>
             <version>4.3.0</version>
-        </dependency>
-		
-        <dependency>
-            <groupId>tw.mics.spigot.plugin.cupboard</groupId>
-            <artifactId>Cupboard</artifactId>
-            <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/../Cupboard/target/Cupboard.jar</systemPath>
         </dependency>
     </dependencies>
 </project>

@@ -2,6 +2,7 @@ package tw.mics.spigot.plugin.nomoreesp;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -11,12 +12,12 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 
 public class XRayDetect {
-    static HashMap<UUID, LinkedHashMap<Block,Double>> player_break_block_add_vl;
+    static HashMap<UUID, LinkedHashMap<Block, HashSet<Block>>> value_block_count_block_set;
     static HashMap<UUID, HashSet<Block>> player_breaked_block;
     static HashMap<UUID, Double> player_vl;
     static HashMap<Material, Double> config_block_value;
     public static void initData(){
-        player_break_block_add_vl = new HashMap<UUID, LinkedHashMap<Block,Double>>();
+        value_block_count_block_set = new HashMap<UUID, LinkedHashMap<Block,HashSet<Block>>>();
         player_breaked_block = new HashMap<UUID, HashSet<Block>>();
         player_vl = new HashMap<UUID, Double>();
         config_block_value = new HashMap<Material, Double>();
@@ -30,12 +31,12 @@ public class XRayDetect {
     }
 
     public static void checkUUIDDataExist(UUID player){
-        int maxEntries = 100;
-        if(!player_break_block_add_vl.containsKey(player)){
-            player_break_block_add_vl.put(player,new LinkedHashMap<Block,Double>(maxEntries*10/7, 0.7f, true){
+        int maxEntries = 20; //每個玩家記錄多少個方塊價值列表
+        if(!value_block_count_block_set.containsKey(player)){
+            value_block_count_block_set.put(player,new LinkedHashMap<Block,HashSet<Block>>(maxEntries*10/7, 0.7f, true){
                 private static final long serialVersionUID = 7122398289557675273L;
                 @Override
-                protected boolean removeEldestEntry(Map.Entry<Block, Double> eldest) {
+                protected boolean removeEldestEntry(Map.Entry<Block, HashSet<Block>> eldest) {
                     return size() > maxEntries;
                 }
             });
@@ -49,65 +50,103 @@ public class XRayDetect {
     }
     
     public static void removeUUID(UUID player){
-        player_break_block_add_vl.remove(player);
+        value_block_count_block_set.remove(player);
         player_breaked_block.remove(player);
         player_vl.remove(player);
     }
     
-    public static LinkedHashMap<Block, Double> getBreakAddVL(UUID player){
+    public static LinkedHashMap<Block, HashSet<Block>> getValueBlockCountBlockSet(UUID player){
         checkUUIDDataExist(player);
-        return player_break_block_add_vl.get(player);
+        return value_block_count_block_set.get(player);
     }
     
-    public static HashMap<Material, Double> getBlockValue(){
-        return config_block_value;
+    public static Double getBlockValue(Material m){
+        return config_block_value.get(m);
     }
 
     public static void playerBreakBlock(UUID player, Block block) {
         new Thread(new Runnable(){
             @Override
             public void run() {
+                //初始化使用者 (之後移動到 PlayerJoin)
                 checkUUIDDataExist(player);
-                Double vl = player_break_block_add_vl.get(player).get(block);
-                HashSet<Block> breaked_block = player_breaked_block.get(player);
+
+                //初始化方塊相關變數
+                Double block_value = getBlockValue(block.getType());
                 String block_location_string = block.getX() + ", " + block.getY() + ", " + block.getZ();
-                //如果有值
-                if(vl != null){
-                    if(breaked_block.contains(block)) {
-                        NoMoreESP.getInstance().logDebug( "%s mining block(%s) mined before, skip add VL.", Bukkit.getPlayer(player).getName(), block_location_string);
+
+                //如果挖的是無價值方塊
+                if(block_value == null){
+                    if(player_vl.get(player) > 0) {
+                        NoMoreESP.getInstance().logDebug("%s is mining non-value block(%s), VL minus %.3f", Bukkit.getPlayer(player).getName(), block_location_string, Config.XRAY_MINUX_VL.getDouble());
+                        player_vl.put(player, player_vl.get(player) - Config.XRAY_MINUX_VL.getDouble());
+                        return;
+                    } else {
                         return;
                     }
-                    breaked_block.add(block);
-                    
-                    
-                    NoMoreESP.getInstance().logDebug( "%s mining targeted block(%s), VL add %.3f", Bukkit.getPlayer(player).getName(), block_location_string, vl);
-                    player_vl.put(player, player_vl.get(player) + vl);
-                    
-                    //reach vl and run command
-                    if(player_vl.get(player) > Config.XRAY_DETECT_RUN_COMMAND_VL.getInt()){
-                        //log
-                        String msg = "%s is reach command vl (now vl is %.3f)";
-                        NoMoreESP.getInstance().log(msg, Bukkit.getPlayer(player).getName(), player_vl.get(player));
-                        
-                        //run command
-                        String str = Config.XRAY_DETECT_RUN_COMMAND.getString().replace("%PLAYER%", Bukkit.getPlayer(player).getName());
-                        if(!str.isEmpty()){
-                            Bukkit.getScheduler().scheduleSyncDelayedTask(NoMoreESP.getInstance(), new Runnable(){
-                                @Override
-                                public void run() {
-                                     Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), str);
-                                }
-                            });
-                        }
-                        
-                        //reset vl
-                        player_vl.put(player, 0.0);
-                    }
-                } else if(player_vl.get(player) > 0) {
-                    NoMoreESP.getInstance().logDebug("%s is mining non-targeted block(%s), VL minus %.3f", Bukkit.getPlayer(player).getName(), block_location_string, Config.XRAY_MINUX_VL.getDouble());
-                    player_vl.put(player, player_vl.get(player) - Config.XRAY_MINUX_VL.getDouble());
-                } else {
+                }
+
+                //如果已經是最近挖過的方塊 不計算
+                HashSet<Block> breaked_block = player_breaked_block.get(player);
+                if(breaked_block.contains(block)) {
+                    NoMoreESP.getInstance().logDebug( "%s mining block(%s) mined before, skip add VL.", Bukkit.getPlayer(player).getName(), block_location_string);
                     return;
+                }
+                breaked_block.add(block);
+
+                //不是無價值方塊 計算 block_count 數量來加成 vl
+                LinkedHashMap<Block, HashSet<Block>> vl_bouns_block = value_block_count_block_set.get(player);
+                int block_count = 0;
+                if(vl_bouns_block.get(block) != null){
+                    Iterator<Block> itr = player_breaked_block.get(player).iterator();
+                    while(itr.hasNext()){
+                        if(vl_bouns_block.get(block).contains(itr.next())){
+                            block_count++;
+                        }
+                    }
+                }
+
+                NoMoreESP.getInstance().logDebug("5");
+                //計算 vl
+                Double vl = block_value * block_count;
+
+                //特殊計算 (黃金)
+                if(block.getType() == Material.GOLD_ORE){
+                    switch(block.getBiome()){
+                    case BADLANDS:
+                    case ERODED_BADLANDS:
+                    case WOODED_BADLANDS_PLATEAU:
+                    case MODIFIED_BADLANDS_PLATEAU:
+                    case MODIFIED_WOODED_BADLANDS_PLATEAU:
+                    case BADLANDS_PLATEAU:
+                        vl /= Config.XRAY_DETECT_GOLD_VL_DIVIDED_NUMBER_IN_MESA.getDouble();
+                    default:
+                        break;
+                    }
+                }
+                
+                NoMoreESP.getInstance().logDebug( "%s mining value block(%s), VL add %.3f (value: %f, count: %d)", Bukkit.getPlayer(player).getName(), block_location_string, vl, block_value, block_count);
+                player_vl.put(player, player_vl.get(player) + vl);
+                
+                //reach vl and run command
+                if(player_vl.get(player) > Config.XRAY_DETECT_RUN_COMMAND_VL.getInt()){
+                    //log
+                    String msg = "%s is reach command vl (now vl is %.3f)";
+                    NoMoreESP.getInstance().log(msg, Bukkit.getPlayer(player).getName(), player_vl.get(player));
+                    
+                    //run command
+                    String str = Config.XRAY_DETECT_RUN_COMMAND.getString().replace("%PLAYER%", Bukkit.getPlayer(player).getName());
+                    if(!str.isEmpty()){
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(NoMoreESP.getInstance(), new Runnable(){
+                            @Override
+                            public void run() {
+                                    Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), str);
+                            }
+                        });
+                    }
+                    
+                    //reset vl
+                    player_vl.put(player, 0.0);
                 }
                 
                 //debug message
