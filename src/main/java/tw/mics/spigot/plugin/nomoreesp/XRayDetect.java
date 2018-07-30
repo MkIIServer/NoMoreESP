@@ -64,7 +64,7 @@ public class XRayDetect {
         return config_block_value.get(m);
     }
 
-    public static void playerBreakBlock(UUID player, Block block) {
+    public static void playerBreakBlock(UUID player, Block block, Material block_type) {
         new Thread(new Runnable(){
             @Override
             public void run() {
@@ -72,7 +72,7 @@ public class XRayDetect {
                 checkUUIDDataExist(player);
 
                 //初始化方塊相關變數
-                Double block_value = getBlockValue(block.getType());
+                Double block_value = getBlockValue(block_type);
                 String block_location_string = block.getX() + ", " + block.getY() + ", " + block.getZ();
 
                 //如果挖的是無價值方塊
@@ -111,7 +111,7 @@ public class XRayDetect {
                 Double vl = block_value * block_count;
 
                 //特殊計算 (黃金)
-                if(block.getType() == Material.GOLD_ORE){
+                if(block_type == Material.GOLD_ORE){
                     switch(block.getBiome()){
                     case BADLANDS:
                     case ERODED_BADLANDS:
