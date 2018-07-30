@@ -11,6 +11,7 @@ import java.util.Calendar;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import tw.mics.spigot.plugin.nomoreesp.listener.XRayDetectListener;
 import tw.mics.spigot.plugin.nomoreesp.schedule.CheckSchedule;
 
 public class NoMoreESP extends JavaPlugin {
@@ -21,8 +22,13 @@ public class NoMoreESP extends JavaPlugin {
     public void onEnable() {
         INSTANCE = this;
         Config.load();
-        if(Config.HIDE_ENTITY_ENABLE.getBoolean()){
+        if(Config.HIDE_ENTITY_ENABLE.getBoolean() || Config.XRAY_DETECT_ENABLE.getBoolean()){
             checkschedule = new CheckSchedule(this);
+        }
+        
+        if(Config.XRAY_DETECT_ENABLE.getBoolean()){
+            new XRayDetectListener(this); 
+            XRayDetect.initData();
         }
     }
     

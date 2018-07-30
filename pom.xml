@@ -89,5 +89,13 @@
             <artifactId>ProtocolLib-API</artifactId>
             <version>4.3.0</version>
         </dependency>
+		
+        <dependency>
+            <groupId>tw.mics.spigot.plugin.cupboard</groupId>
+            <artifactId>Cupboard</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/../Cupboard/target/Cupboard.jar</systemPath>
+        </dependency>
     </dependencies>
 </project>
