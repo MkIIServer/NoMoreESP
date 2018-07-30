@@ -71,19 +71,19 @@ public class XRayDetect {
                 Double block_value = getBlockValue(block_type);
                 String block_location_string = block.getX() + ", " + block.getY() + ", " + block.getZ();
 
+                //如果已經是最近挖過的方塊 不計算
+                HashSet<Block> breaked_block = player_breaked_block.get(player);
+                
                 //如果挖的是無價值方塊
                 if(block_value == null){
                     if(player_vl.get(player) > 0) {
                         NoMoreESP.getInstance().logDebug("%s is mining non-value block(%s), VL minus %.3f", Bukkit.getPlayer(player).getName(), block_location_string, Config.XRAY_MINUX_VL.getDouble());
                         player_vl.put(player, player_vl.get(player) - Config.XRAY_MINUX_VL.getDouble());
-                        return;
-                    } else {
-                        return;
                     }
+                    breaked_block.add(block);
+                    return;
                 }
 
-                //如果已經是最近挖過的方塊 不計算
-                HashSet<Block> breaked_block = player_breaked_block.get(player);
                 if(breaked_block.contains(block)) {
                     NoMoreESP.getInstance().logDebug( "%s mining block(%s) mined before, skip add VL.", Bukkit.getPlayer(player).getName(), block_location_string);
                     return;
@@ -94,15 +94,14 @@ public class XRayDetect {
                 LinkedHashMap<Block, HashSet<Block>> vl_bouns_block = value_block_count_block_set.get(player);
                 int block_count = 0;
                 if(vl_bouns_block.get(block) != null){
-                    Iterator<Block> itr = player_breaked_block.get(player).iterator();
+                    Iterator<Block> itr = vl_bouns_block.get(block).iterator();
                     while(itr.hasNext()){
-                        if(vl_bouns_block.get(block).contains(itr.next())){
+                        if(breaked_block.contains(itr.next())){
                             block_count++;
                         }
                     }
                 }
 
-                NoMoreESP.getInstance().logDebug("5");
                 //計算 vl
                 Double vl = block_value * block_count;
 
