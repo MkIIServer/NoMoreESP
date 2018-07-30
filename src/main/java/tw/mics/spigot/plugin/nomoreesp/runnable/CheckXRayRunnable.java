@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -24,6 +25,7 @@ public class CheckXRayRunnable implements Runnable {
     public void run() {
         //get spVector
         Location loc = player.getLocation();
+        waitChunkLoad(loc);
         loc.add(0, 1.625, 0);
         Vector vector = loc.getDirection();
         HashSet<Block> blocks = new HashSet<Block>();
@@ -39,18 +41,16 @@ public class CheckXRayRunnable implements Runnable {
         }
         for(int i = 0; i < 20 ; i++) {
             loc.add(vector);
+            waitChunkLoad(loc);
             Block value_block = null;
             Double value = null;
             String block_location_string = null;
             Material blocktype;
             
-            try{
-                value_block = loc.getBlock();
-                blocktype = value_block.getType();
-                block_location_string = value_block.getX() + ", " + value_block.getY() + ", " + value_block.getZ();
-            } catch (IllegalStateException e){
-                break; //skip when error
-            }
+            value_block = loc.getBlock();
+            blocktype = value_block.getType();
+            block_location_string = value_block.getX() + ", " + value_block.getY() + ", " + value_block.getZ();
+
             value = XRayDetect.getBlockValue(blocktype);
             if (value != null) { //如果指到有價值的方塊
                 LinkedHashMap<Block, HashSet<Block>> value_block_count_block_set = XRayDetect.getValueBlockCountBlockSet(player.getUniqueId());
@@ -68,11 +68,42 @@ public class CheckXRayRunnable implements Runnable {
                         count_block_set.add(count_block);
                     }
                 }
-                NoMoreESP.getInstance().logDebug( "%s look at value block(%s) now have %d count blocks.", player.getName(), block_location_string, count_block_set.size());
+                NoMoreESP.getInstance().logDebug("%s look at value block(%s) now have %d count blocks.", player.getName(), block_location_string, count_block_set.size());
                 break;
             }
             blocks.add(loc.getBlock());
         }
     }
 
+    private void waitChunkLoad(Location loc){
+        ChunkLoadRunnable runnable = new ChunkLoadRunnable(loc);
+        Bukkit.getScheduler().runTask(NoMoreESP.getInstance(), runnable);
+        synchronized(runnable) {
+            while(runnable.waitload){
+                try {
+					runnable.wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+                }
+            }
+        }
+    }
+}
+
+class ChunkLoadRunnable implements Runnable{
+    public Boolean waitload = true;
+    private Location loc;
+
+    ChunkLoadRunnable(Location loc){
+        this.loc = loc;
+    }
+
+    @Override
+    public void run() {
+        synchronized (this) {
+            loc.getChunk().load();
+            this.waitload = false;
+            this.notify();
+        }
+    }
 }
