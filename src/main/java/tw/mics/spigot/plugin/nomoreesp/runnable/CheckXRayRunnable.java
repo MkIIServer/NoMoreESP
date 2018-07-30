@@ -59,12 +59,15 @@ public class CheckXRayRunnable implements Runnable {
                 HashSet<Block> count_block_set = value_block_count_block_set.get(value_block);
                 if(count_block_set == null){
                     count_block_set = new HashSet<Block>();
+                    value_block_count_block_set.put(value_block, count_block_set);
                 }
 
                 Iterator<Block> iter = blocks.iterator();
                 while(iter.hasNext()){
                     Block count_block = iter.next();
-                    count_block_set.add(count_block);
+                    if(count_block.getType().isSolid()){ //實體方塊才算
+                        count_block_set.add(count_block);
+                    }
                 }
                 NoMoreESP.getInstance().logDebug( "%s look at value block(%s) now have %d count blocks.", player.getName(), block_location_string, count_block_set.size());
                 break;
