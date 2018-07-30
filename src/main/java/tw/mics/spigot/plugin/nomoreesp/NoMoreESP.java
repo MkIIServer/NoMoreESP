@@ -7,7 +7,10 @@ import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Iterator;
 
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -29,6 +32,12 @@ public class NoMoreESP extends JavaPlugin {
         if(Config.XRAY_DETECT_ENABLE.getBoolean()){
             new XRayDetectListener(this); 
             XRayDetect.initData();
+        }
+
+        //reload support
+        Iterator<? extends Player> itr = Bukkit.getOnlinePlayers().iterator();
+        while(itr.hasNext()){
+            XRayDetect.checkUUIDDataExist(itr.next().getUniqueId());
         }
     }
     

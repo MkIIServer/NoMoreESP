@@ -56,7 +56,6 @@ public class XRayDetect {
     }
     
     public static LinkedHashMap<Block, HashSet<Block>> getValueBlockCountBlockSet(UUID player){
-        checkUUIDDataExist(player);
         return value_block_count_block_set.get(player);
     }
     
@@ -68,9 +67,6 @@ public class XRayDetect {
         new Thread(new Runnable(){
             @Override
             public void run() {
-                //初始化使用者 (之後移動到 PlayerJoin)
-                checkUUIDDataExist(player);
-
                 //初始化方塊相關變數
                 Double block_value = getBlockValue(block_type);
                 String block_location_string = block.getX() + ", " + block.getY() + ", " + block.getZ();
