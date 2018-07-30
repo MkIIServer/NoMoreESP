@@ -69,10 +69,10 @@ public class NoMoreESP extends JavaPlugin {
     public void logDebug(String str, Object... args) {
         String message = String.format(str, args);
         if(Config.DEBUG_IN_FILE.getBoolean()){
-            logDebugInToFile(message);
+            logDebugInToFile(message + " (DEBUG)");
         }
         if (Config.DEBUG_IN_CONSOLE.getBoolean()) {
-            getLogger().info("(DEBUG) " + message);
+            getLogger().info(message + " (DEBUG)");
         }
     }
     
@@ -84,7 +84,7 @@ public class NoMoreESP extends JavaPlugin {
                 if(!dataFolder.exists()){
                     dataFolder.mkdir();
                 }
-                File saveTo = new File(dataFolder, "debug.log");
+                File saveTo = new File(dataFolder, "log.log");
                 if (!saveTo.exists()){
                     saveTo.createNewFile();
                 }
@@ -109,7 +109,7 @@ public class NoMoreESP extends JavaPlugin {
                 if(!dataFolder.exists()){
                     dataFolder.mkdir();
                 }
-                File saveTo = new File(dataFolder, "detect.log");
+                File saveTo = new File(dataFolder, "log.log");
                 if (!saveTo.exists()){
                     saveTo.createNewFile();
                 }

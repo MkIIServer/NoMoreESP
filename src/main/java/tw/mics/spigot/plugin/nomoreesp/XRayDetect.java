@@ -82,7 +82,7 @@ public class XRayDetect {
                 //如果挖的是無價值方塊
                 if(block_value == null){
                     if(player_vl.get(player) > 0) {
-                        NoMoreESP.getInstance().logDebug("%s is mining non-value block(%s), VL minus %.3f", Bukkit.getPlayer(player).getName(), block_location_string, Config.XRAY_MINUX_VL.getDouble());
+                        NoMoreESP.getInstance().logDebug("%s mining block(%s) is non-valuable, VL minus %.3f", Bukkit.getPlayer(player).getName(), block_location_string, Config.XRAY_MINUX_VL.getDouble());
                         player_vl.put(player, player_vl.get(player) - Config.XRAY_MINUX_VL.getDouble());
                     }
                     return;
@@ -101,7 +101,7 @@ public class XRayDetect {
                 }
 
                 //計算 vl
-                Double vl = block_value * block_count;
+                Double vl = block_value * (block_count + 1);
 
                 //特殊計算 (黃金)
                 if(block_type == Material.GOLD_ORE){
@@ -118,13 +118,13 @@ public class XRayDetect {
                     }
                 }
                 
-                NoMoreESP.getInstance().logDebug( "%s mining value block(%s), VL add %.3f (value: %f, count: %d)", Bukkit.getPlayer(player).getName(), block_location_string, vl, block_value, block_count);
+                NoMoreESP.getInstance().log( "%s mining block(%s) is valuable, VL add %.3f (value: %f, count: %d)", Bukkit.getPlayer(player).getName(), block_location_string, vl, block_value, block_count);
                 player_vl.put(player, player_vl.get(player) + vl);
                 
                 //reach vl and run command
                 if(player_vl.get(player) > Config.XRAY_DETECT_RUN_COMMAND_VL.getInt()){
                     //log
-                    String msg = "%s is reach command vl (now vl is %.3f)";
+                    String msg = "%s is reach command VL (now VL is %.3f)";
                     NoMoreESP.getInstance().log(msg, Bukkit.getPlayer(player).getName(), player_vl.get(player));
                     
                     //run command
@@ -143,7 +143,7 @@ public class XRayDetect {
                 }
                 
                 //debug message
-                NoMoreESP.getInstance().logDebug( "%s's VL is now %.3f",Bukkit.getPlayer(player).getName(), player_vl.get(player));
+                NoMoreESP.getInstance().log( "%s's VL is now %.3f",Bukkit.getPlayer(player).getName(), player_vl.get(player));
             }
         }).start();
     }

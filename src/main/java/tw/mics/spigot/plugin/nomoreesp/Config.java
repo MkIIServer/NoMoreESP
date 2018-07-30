@@ -22,12 +22,12 @@ public enum Config {
     XRAY_DETECT_ENABLE("xray-detect.enable", true, ""),
     XRAY_DETECT_ENABLE_WORLDS("xray-detect.enable-worlds", Arrays.asList("world"), ""),
     XRAY_DETECT_ADD_VL_BLOCK_AND_NUMBER("xray-detect.vl-list", Arrays.asList(
-            "IRON_ORE:1",
-            "GOLD_ORE:3",
-            "DIAMOND_ORE:5",
+            "IRON_ORE:2",
+            "GOLD_ORE:2",
+            "DIAMOND_ORE:4",
             "EMERALD_ORE:5"
             ), ""),
-    XRAY_MINUX_VL("xray-detect.vl-minus", 0.1, ""),
+    XRAY_MINUX_VL("xray-detect.vl-minus", 0.5, ""),
     XRAY_DETECT_GOLD_VL_DIVIDED_NUMBER_IN_MESA("xray-detect.gold-vl-divided-number-in-mesa", 3, 
             "gold is much more in mesa"),
     XRAY_DETECT_RUN_COMMAND_VL("xray-detect.run_command_vl", 500, "do not less than 300, will false postive."),
