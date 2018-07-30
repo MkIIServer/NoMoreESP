@@ -101,7 +101,7 @@ public class XRayDetect {
                 }
 
                 //計算 vl
-                Double vl = block_value * (block_count + 1);
+                Double vl = block_value * (block_count);
 
                 //特殊計算 (黃金)
                 if(block_type == Material.GOLD_ORE){
