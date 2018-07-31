@@ -69,7 +69,7 @@ public class XRayDetect {
             public void run() {
                 //初始化方塊相關變數
                 Double block_value = getBlockValue(block_type);
-                String block_location_string = block.getX() + ", " + block.getY() + ", " + block.getZ();
+                String block_location_string = block.getX() + " " + block.getY() + " " + block.getZ();
 
                 //如果已經是最近挖過的方塊 不計算
                 HashSet<Block> breaked_block = player_breaked_block.get(player);
