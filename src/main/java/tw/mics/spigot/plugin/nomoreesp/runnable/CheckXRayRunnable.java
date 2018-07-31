@@ -39,7 +39,7 @@ public class CheckXRayRunnable implements Runnable {
         } else {
             vector.multiply(1/z);
         }
-        for(int i = 0; i < 20 ; i++) {
+        for(int i = 0; i < 10 ; i++) {
             loc.add(vector);
             waitChunkLoad(loc);
             Block value_block = null;
