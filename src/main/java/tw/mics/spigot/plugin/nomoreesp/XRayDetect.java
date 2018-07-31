@@ -123,23 +123,24 @@ public class XRayDetect {
                 
                 //reach vl and run command
                 if(player_vl.get(player) > Config.XRAY_DETECT_RUN_COMMAND_VL.getInt()){
-                    //log
-                    String msg = "%s is reach command VL (now VL is %.3f)";
-                    NoMoreESP.getInstance().log(msg, Bukkit.getPlayer(player).getName(), player_vl.get(player));
                     
                     //run command
                     String str = Config.XRAY_DETECT_RUN_COMMAND.getString().replace("%PLAYER%", Bukkit.getPlayer(player).getName());
                     if(!str.isEmpty()){
+
+                        //log
+                        String msg = "%s is reach command VL (now VL is %.3f)";
+                        NoMoreESP.getInstance().log(msg, Bukkit.getPlayer(player).getName(), player_vl.get(player));
+
                         Bukkit.getScheduler().scheduleSyncDelayedTask(NoMoreESP.getInstance(), new Runnable(){
                             @Override
                             public void run() {
                                     Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), str);
                             }
                         });
+
+                        player_vl.put(player, 0.0); //reset VL
                     }
-                    
-                    //reset vl
-                    player_vl.put(player, 0.0);
                 }
                 
                 //debug message
