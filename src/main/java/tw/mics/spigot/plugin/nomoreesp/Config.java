@@ -29,7 +29,7 @@ public enum Config {
     XRAY_MINUX_VL("xray-detect.vl-minus", 0.5, ""),
     XRAY_DETECT_GOLD_VL_DIVIDED_NUMBER_IN_MESA("xray-detect.gold-vl-divided-number-in-mesa", 3, 
             "gold is much more in mesa"),
-    XRAY_DETECT_RUN_COMMAND_VL("xray-detect.run_command_vl", 1000, "do not less than 300, will false postive."),
+    XRAY_DETECT_RUN_COMMAND_VL("xray-detect.run_command_vl", 1000, "do not less than 1000, will false postive."),
     XRAY_DETECT_RUN_COMMAND("xray-detect.run_command", "ban %PLAYER% do not use x-ray", "");
 
     private final Object value;
